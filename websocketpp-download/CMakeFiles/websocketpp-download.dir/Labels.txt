@@ -1,0 +1,13 @@
+# Target labels
+ websocketpp-download
+# Source files and their labels
+/home/ec2-user/q-bot/websocketpp-download/CMakeFiles/websocketpp-download
+/home/ec2-user/q-bot/websocketpp-download/CMakeFiles/websocketpp-download.rule
+/home/ec2-user/q-bot/websocketpp-download/CMakeFiles/websocketpp-download-complete.rule
+/home/ec2-user/q-bot/websocketpp-download/websocketpp-download-prefix/src/websocketpp-download-stamp/websocketpp-download-build.rule
+/home/ec2-user/q-bot/websocketpp-download/websocketpp-download-prefix/src/websocketpp-download-stamp/websocketpp-download-configure.rule
+/home/ec2-user/q-bot/websocketpp-download/websocketpp-download-prefix/src/websocketpp-download-stamp/websocketpp-download-download.rule
+/home/ec2-user/q-bot/websocketpp-download/websocketpp-download-prefix/src/websocketpp-download-stamp/websocketpp-download-install.rule
+/home/ec2-user/q-bot/websocketpp-download/websocketpp-download-prefix/src/websocketpp-download-stamp/websocketpp-download-mkdir.rule
+/home/ec2-user/q-bot/websocketpp-download/websocketpp-download-prefix/src/websocketpp-download-stamp/websocketpp-download-patch.rule
+/home/ec2-user/q-bot/websocketpp-download/websocketpp-download-prefix/src/websocketpp-download-stamp/websocketpp-download-test.rule

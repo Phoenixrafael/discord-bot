@@ -1,0 +1,13 @@
+# Target labels
+ asio-download
+# Source files and their labels
+/home/ec2-user/q-bot/asio-download/CMakeFiles/asio-download
+/home/ec2-user/q-bot/asio-download/CMakeFiles/asio-download.rule
+/home/ec2-user/q-bot/asio-download/CMakeFiles/asio-download-complete.rule
+/home/ec2-user/q-bot/asio-download/asio-download-prefix/src/asio-download-stamp/asio-download-build.rule
+/home/ec2-user/q-bot/asio-download/asio-download-prefix/src/asio-download-stamp/asio-download-configure.rule
+/home/ec2-user/q-bot/asio-download/asio-download-prefix/src/asio-download-stamp/asio-download-download.rule
+/home/ec2-user/q-bot/asio-download/asio-download-prefix/src/asio-download-stamp/asio-download-install.rule
+/home/ec2-user/q-bot/asio-download/asio-download-prefix/src/asio-download-stamp/asio-download-mkdir.rule
+/home/ec2-user/q-bot/asio-download/asio-download-prefix/src/asio-download-stamp/asio-download-patch.rule
+/home/ec2-user/q-bot/asio-download/asio-download-prefix/src/asio-download-stamp/asio-download-test.rule

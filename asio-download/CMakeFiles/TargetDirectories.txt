@@ -1,0 +1,3 @@
+/home/ec2-user/q-bot/asio-download/CMakeFiles/rebuild_cache.dir
+/home/ec2-user/q-bot/asio-download/CMakeFiles/asio-download.dir
+/home/ec2-user/q-bot/asio-download/CMakeFiles/edit_cache.dir

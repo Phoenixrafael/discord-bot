@@ -1,0 +1,3 @@
+/home/ec2-user/q-bot/cpr-download/CMakeFiles/rebuild_cache.dir
+/home/ec2-user/q-bot/cpr-download/CMakeFiles/cpr-download.dir
+/home/ec2-user/q-bot/cpr-download/CMakeFiles/edit_cache.dir

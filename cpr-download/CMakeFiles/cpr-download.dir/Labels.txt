@@ -1,0 +1,13 @@
+# Target labels
+ cpr-download
+# Source files and their labels
+/home/ec2-user/q-bot/cpr-download/CMakeFiles/cpr-download
+/home/ec2-user/q-bot/cpr-download/CMakeFiles/cpr-download.rule
+/home/ec2-user/q-bot/cpr-download/CMakeFiles/cpr-download-complete.rule
+/home/ec2-user/q-bot/cpr-download/cpr-download-prefix/src/cpr-download-stamp/cpr-download-build.rule
+/home/ec2-user/q-bot/cpr-download/cpr-download-prefix/src/cpr-download-stamp/cpr-download-configure.rule
+/home/ec2-user/q-bot/cpr-download/cpr-download-prefix/src/cpr-download-stamp/cpr-download-download.rule
+/home/ec2-user/q-bot/cpr-download/cpr-download-prefix/src/cpr-download-stamp/cpr-download-install.rule
+/home/ec2-user/q-bot/cpr-download/cpr-download-prefix/src/cpr-download-stamp/cpr-download-mkdir.rule
+/home/ec2-user/q-bot/cpr-download/cpr-download-prefix/src/cpr-download-stamp/cpr-download-patch.rule
+/home/ec2-user/q-bot/cpr-download/cpr-download-prefix/src/cpr-download-stamp/cpr-download-test.rule

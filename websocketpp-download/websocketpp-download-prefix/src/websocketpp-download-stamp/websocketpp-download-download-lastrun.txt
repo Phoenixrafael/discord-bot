@@ -1,0 +1,5 @@
+method=git
+repository=https://github.com/zaphoyd/websocketpp.git
+remote=origin
+source_dir=/home/ec2-user/q-bot/sleepy-discord/deps/websocketpp
+

@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/ec2-user/q-bot/cpr-download/CMakeFiles/cpr-download"
+		},
+		{
+			"file" : "/home/ec2-user/q-bot/cpr-download/CMakeFiles/cpr-download.rule"
+		},
+		{
+			"file" : "/home/ec2-user/q-bot/cpr-download/CMakeFiles/cpr-download-complete.rule"
+		},
+		{
+			"file" : "/home/ec2-user/q-bot/cpr-download/cpr-download-prefix/src/cpr-download-stamp/cpr-download-build.rule"
+		},
+		{
+			"file" : "/home/ec2-user/q-bot/cpr-download/cpr-download-prefix/src/cpr-download-stamp/cpr-download-configure.rule"
+		},
+		{
+			"file" : "/home/ec2-user/q-bot/cpr-download/cpr-download-prefix/src/cpr-download-stamp/cpr-download-download.rule"
+		},
+		{
+			"file" : "/home/ec2-user/q-bot/cpr-download/cpr-download-prefix/src/cpr-download-stamp/cpr-download-install.rule"
+		},
+		{
+			"file" : "/home/ec2-user/q-bot/cpr-download/cpr-download-prefix/src/cpr-download-stamp/cpr-download-mkdir.rule"
+		},
+		{
+			"file" : "/home/ec2-user/q-bot/cpr-download/cpr-download-prefix/src/cpr-download-stamp/cpr-download-patch.rule"
+		},
+		{
+			"file" : "/home/ec2-user/q-bot/cpr-download/cpr-download-prefix/src/cpr-download-stamp/cpr-download-test.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"cpr-download"
+		],
+		"name" : "cpr-download"
+	}
+}

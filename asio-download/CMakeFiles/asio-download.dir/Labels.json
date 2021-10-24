@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/ec2-user/q-bot/asio-download/CMakeFiles/asio-download"
+		},
+		{
+			"file" : "/home/ec2-user/q-bot/asio-download/CMakeFiles/asio-download.rule"
+		},
+		{
+			"file" : "/home/ec2-user/q-bot/asio-download/CMakeFiles/asio-download-complete.rule"
+		},
+		{
+			"file" : "/home/ec2-user/q-bot/asio-download/asio-download-prefix/src/asio-download-stamp/asio-download-build.rule"
+		},
+		{
+			"file" : "/home/ec2-user/q-bot/asio-download/asio-download-prefix/src/asio-download-stamp/asio-download-configure.rule"
+		},
+		{
+			"file" : "/home/ec2-user/q-bot/asio-download/asio-download-prefix/src/asio-download-stamp/asio-download-download.rule"
+		},
+		{
+			"file" : "/home/ec2-user/q-bot/asio-download/asio-download-prefix/src/asio-download-stamp/asio-download-install.rule"
+		},
+		{
+			"file" : "/home/ec2-user/q-bot/asio-download/asio-download-prefix/src/asio-download-stamp/asio-download-mkdir.rule"
+		},
+		{
+			"file" : "/home/ec2-user/q-bot/asio-download/asio-download-prefix/src/asio-download-stamp/asio-download-patch.rule"
+		},
+		{
+			"file" : "/home/ec2-user/q-bot/asio-download/asio-download-prefix/src/asio-download-stamp/asio-download-test.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"asio-download"
+		],
+		"name" : "asio-download"
+	}
+}

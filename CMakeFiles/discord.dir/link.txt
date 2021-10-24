@@ -1,0 +1,1 @@
+/usr/bin/c++ -rdynamic CMakeFiles/discord.dir/discord.o CMakeFiles/discord.dir/sqlite3.o -o discord   -L/home/ec2-user/q-bot/sleepy-discord/sleepy_discord  -L/home/ec2-user/q-bot/lib  sleepy-discord/sleepy_discord/libsleepy-discord.a -ldl lib/libcpr.a -lcurl -lssl -lcrypto -pthread 
