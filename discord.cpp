@@ -314,10 +314,10 @@ public:
 	long long ReadHintTime(std::string serverid, std::string questionname) {
 		std::ifstream readFile;
 #ifdef _WIN32
-		readFile.open("database\\hint\\" + serverid + " " + questionname + ".txt");
+		readFile.open("database\\hint\\" + serverid + "-" + questionname + ".txt");
 #endif
 #ifdef linux
-		readFile.open("/home/phoenix/discord-bot/discord-bot/database/hint/\"" + serverid + " " + questionname + "\".txt");
+		readFile.open("/home/phoenix/discord-bot/discord-bot/database/hint/" + serverid + " " + questionname + ".txt");
 #endif
 
 		if (readFile.is_open()) {
@@ -336,10 +336,10 @@ public:
 	bool WriteHintTime(std::string serverid, std::string questionname, int hintday) {
 		std::ofstream ofile;
 #ifdef _WIN32
-		ofile.open("database\\hint\\" + serverid + " " + questionname + ".txt");
+		ofile.open("database\\hint\\" + serverid + "-" + questionname + ".txt");
 #endif
 #ifdef linux
-		ofile.open("/home/phoenix/discord-bot/discord-bot/database/hint/\"" + serverid + " " + questionname + "\".txt");
+		ofile.open("/home/phoenix/discord-bot/discord-bot/database/hint/" + serverid + " " + questionname + ".txt");
 #endif
 
 		ofile << std::to_string(hintday);
@@ -349,10 +349,10 @@ public:
 	bool WriteQuestion(ibot::Questioninfo Qi) {
 		std::ofstream ofile;
 #ifdef _WIN32
-		ofile.open("database\\questions\\" + Qi.serverid + " " + hexprint(Qi.name) + ".txt");
+		ofile.open("database\\questions\\" + Qi.serverid + "-" + hexprint(Qi.name) + ".txt");
 #endif
 #ifdef linux
-		ofile.open("/home/phoenix/discord-bot/discord-bot/database/questions/\"" + Qi.serverid + " " + hexprint(Qi.name) + "\".txt");
+		ofile.open("/home/phoenix/discord-bot/discord-bot/database/questions/" + Qi.serverid + " " + hexprint(Qi.name) + ".txt");
 #endif
 		std::string out;
 		out = "{{answer}}\n";
@@ -377,11 +377,11 @@ public:
 	ibot::Questioninfo ReadQuestion(std::string serverid, std::string questionname) {
 		std::ifstream readFile;
 #ifdef _WIN32
-		readFile.open("database\\questions\\" + serverid + " " + hexprint(questionname) + ".txt");
+		readFile.open("database\\questions\\" + serverid + "-" + hexprint(questionname) + ".txt");
 #endif
 #ifdef linux
 		printf("linux is detected!");
-		readFile.open("/home/phoenix/discord-bot/discord-bot/database/questions/\"" + serverid + " " + hexprint(questionname) + "\".txt");
+		readFile.open("/home/phoenix/discord-bot/discord-bot/database/questions/" + serverid + " " + hexprint(questionname) + ".txt");
 #endif
 		ibot::Questioninfo Qi;
 		if (readFile.is_open()) {
@@ -473,10 +473,10 @@ public:
 		if (Qi.name == inv)
 		if (answer == inv && channelid == inv && roleid == inv && hint == inv && manswer.size() == 0) {
 #ifdef _WIN32
-			remove(("database\\questions\\" + serverid + " " + hexprint(questionname) + ".txt").c_str());
+			remove(("database\\questions\\" + serverid + "-" + hexprint(questionname) + ".txt").c_str());
 #endif
 #ifdef linux
-			remove(("/home/phoenix/discord-bot/discord-bot/database/questions/\"" + serverid + " " + hexprint(questionname) + "\".txt").c_str());
+			remove(("/home/phoenix/discord-bot/discord-bot/database/questions/" + serverid + " " + hexprint(questionname) + ".txt").c_str());
 #endif
 		}
 		Qi.serverid = serverid;
