@@ -609,7 +609,7 @@ public:
 		ofile.open("database\\questions\\" + Qi.serverid + " " + hexprint(Qi.name) + ".txt");
 #endif
 #ifdef linux
-		ofile.open("database/questions/" + serverid + " " + questionname + ".txt");
+		ofile.open("database/questions/" + Qi.serverid + " " + hexprint(Qi.name) + ".txt");
 #endif
 		std::string out;
 		out = "{{answer}}\n";
@@ -638,7 +638,7 @@ public:
 #endif
 #ifdef linux
 		printf("linux is detected!");
-		readFile.open("database/questions/" + serverid + " " + questionname + ".txt");
+		readFile.open("database/questions/" + serverid + " " + hexprint(questionname) + ".txt");
 #endif
 		ibot::Questioninfo Qi;
 		if (readFile.is_open()) {
@@ -786,7 +786,7 @@ public:
 		ofile.open("database\\serverinfo\\" + Si.serverid + ".txt");
 #endif
 #ifdef linux
-		ofile.open("database/serverinfo/" + serverid + " " + questionname + ".txt");
+		ofile.open("database/serverinfo/" + Si.serverid + ".txt");
 #endif
 		std::string out;
 		out = Si.release?"1":"0";
@@ -801,7 +801,7 @@ public:
 		readFile.open("database\\serverinfo\\" + serverid + ".txt");
 #endif
 #ifdef linux
-		readFile.open("database/serverinfo/" + serverid + " " + questionname + ".txt");
+		readFile.open("database/serverinfo/" + serverid + ".txt");
 #endif
 		ibot::Serverinfo Si;
 		if (readFile.is_open()) {
