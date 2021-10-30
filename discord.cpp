@@ -637,6 +637,7 @@ public:
 		readFile.open("database\\questions\\" + serverid + " " + hexprint(questionname) + ".txt");
 #endif
 #ifdef linux
+		printf("linux is detected!");
 		readFile.open("database/questions/" + serverid + " " + questionname + ".txt");
 #endif
 		ibot::Questioninfo Qi;
