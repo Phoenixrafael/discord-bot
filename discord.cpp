@@ -561,7 +561,7 @@ public:
 			int in;
 			while (readFile) {
 				getline(readFile, str);
-				ReplaceAll(str, "\n", "");
+				ReplaceAll(str, "\r", "");
 				std::stringstream SS(str);
 				switch (i) {
 					case 0:
