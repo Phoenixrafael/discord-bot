@@ -324,7 +324,7 @@ public:
 			std::string str;
 			while (readFile) {
 				getline(readFile, str);
-			ReplaceAll(str, "\n", "");
+				ReplaceAll(str, "\r", "");
 			}
 			std::stringstream SS(str);
 			long long i;
@@ -397,7 +397,7 @@ public:
 			ibot::MultipleAnswer M;
 			while (readFile) {
 				getline(readFile, str);
-				ReplaceAll(str, "\n", "");
+				ReplaceAll(str, "\r", "");
 				printf("- %s -\n- %s -\n", str.c_str(), hexprint(str).c_str());
 				if (str == "{{answer}}"
 					|| str == "{{channelid}}"
