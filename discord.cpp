@@ -596,7 +596,7 @@ public:
 		ofile.open("database\\hint\\" + serverid + " " + questionname + ".txt");
 #endif
 #ifdef linux
-		readFile.open("database/hint/" + serverid + " " + questionname + ".txt");
+		ofile.open("database/hint/" + serverid + " " + questionname + ".txt");
 #endif
 
 		ofile << std::to_string(hintday);
@@ -609,7 +609,7 @@ public:
 		ofile.open("database\\questions\\" + Qi.serverid + " " + hexprint(Qi.name) + ".txt");
 #endif
 #ifdef linux
-		readFile.open("database/questions/" + serverid + " " + questionname + ".txt");
+		ofile.open("database/questions/" + serverid + " " + questionname + ".txt");
 #endif
 		std::string out;
 		out = "{{answer}}\n";
@@ -733,7 +733,7 @@ public:
 			remove(("database\\questions\\" + serverid + " " + hexprint(questionname) + ".txt").c_str());
 #endif
 #ifdef linux
-			readFile.open("database/questions/" + serverid + " " + questionname + ".txt");
+			remove(("database/questions/" + serverid + " " + hexprint(questionname) + ".txt").c_str());
 #endif
 		}
 		Qi.serverid = serverid;
@@ -786,7 +786,7 @@ public:
 		ofile.open("database\\serverinfo\\" + Si.serverid + ".txt");
 #endif
 #ifdef linux
-		readFile.open("database/serverinfo/" + serverid + " " + questionname + ".txt");
+		ofile.open("database/serverinfo/" + serverid + " " + questionname + ".txt");
 #endif
 		std::string out;
 		out = Si.release?"1":"0";
