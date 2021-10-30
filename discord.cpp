@@ -311,270 +311,13 @@ public:
 		return output;
 	}
 
-	/*std::string ReadAnswer(std::string serverid, std::string questionname) {
-		std::ifstream readFile;
-		readFile.open("database\\answers\\" + serverid + " " + questionname + ".txt");
-		if (readFile.is_open()) {
-			std::string str;
-			while (readFile) {
-				getline(readFile, str);
-			}
-			return str;
-		}
-		return "INVALIDINVALIDINVALID";
-	}
-
-	bool WriteAnswer(std::string serverid, std::string questionname, std::string answer) {
-		std::ofstream ofile;
-		ofile.open("database\\answers\\" + hexprint(serverid + " " + questionname + ".txt");
-		ofile << answer;
-		if (answer == "INVALIDINVALIDINVALID") {
-			ofile.close();
-			remove(("database\\answers\\" + serverid + " " + questionname + ".txt").c_str());
-		}
-		return true;
-	}
-
-	std::string ReadChannel(std::string serverid, std::string questionname) {
-		std::ifstream readFile;
-		readFile.open("database\\channels\\" + serverid + " " + questionname + ".txt");
-		if (readFile.is_open()) {
-			std::string str;
-			while (readFile) {
-				getline(readFile, str);
-			}
-			return str;
-		}
-		return "-1";
-	}
-
-	bool WriteChannel(std::string serverid, std::string questionname, std::string channelid) {
-		std::ofstream ofile;
-		ofile.open("database\\channels\\" + serverid + " " + questionname + ".txt");
-
-		ofile << channelid;
-		if (channelid == "-1") {
-			ofile.close();
-			remove(("database\\channels\\" + serverid + " " + questionname + ".txt").c_str());
-		}
-		return true;
-	}
-
-	std::string ReadRoles(std::string serverid, std::string questionname) {
-		std::ifstream readFile;
-		readFile.open("database\\roles\\" + serverid + " " + questionname + ".txt");
-		if (readFile.is_open()) {
-			std::string str;
-			while (readFile) {
-				getline(readFile, str);
-			}
-			return str;
-		}
-		return "-1";
-	}
-
-	bool WriteRoles(std::string serverid, std::string questionname, std::string roleid) {
-		std::ofstream ofile;
-		ofile.open("database\\roles\\" + serverid + " " + questionname + ".txt");
-
-		ofile << roleid;
-		if (roleid == "-1") {
-			ofile.close();
-			remove(("database\\roles\\" + serverid + " " + questionname + ".txt").c_str());
-		}
-		return true;
-	}
-
-	std::string ReadHint(std::string serverid, std::string questionname) {
-		std::ifstream readFile;
-		readFile.open("database\\hint\\" + serverid + " " + questionname + ".txt");
-		if (readFile.is_open()) {
-			std::string str;
-			while (readFile) {
-				getline(readFile, str);
-			}
-			return str;
-		}
-		return "-1";
-	}
-
-	bool WriteHint(std::string serverid, std::string questionname, std::string hint) {
-		std::ofstream ofile;
-		ofile.open("database\\hint\\" + serverid + " " + questionname + ".txt");
-
-		ofile << hint;
-		if (hint == "-1") {
-			ofile.close();
-			remove(("database\\hint\\" + serverid + " " + questionname + ".txt").c_str());
-		}
-		return true;
-	}
-
-	long long ReadHintTime(std::string serverid, std::string questionname) {
-		std::ifstream readFile;
-		readFile.open("database\\hint\\" + serverid + " " + questionname + ".txt");
-		if (readFile.is_open()) {
-			std::string str;
-			while (readFile) {
-				getline(readFile, str);
-			}
-			std::stringstream SS(str);
-			long long i;
-			SS >> i;
-			return i;
-		}
-		return -1;
-	}
-
-	bool WriteHintTime(std::string serverid, std::string questionname, int hintday) {
-		std::ofstream ofile;
-		ofile.open("database\\hint\\" + serverid + " " + questionname + ".txt");
-
-		ofile << std::to_string(hintday);
-		return true;
-	}
-
-	int IsAnswer(std::string serverid, std::string questionname, std::string answer) {
-		if (ReadAnswer(serverid, questionname) == "INVALIDINVALIDINVALID") {
-			return -1;
-		}
-		if (ReadAnswer(serverid, questionname) == answer) {
-			return 1;
-		}
-		return 0;
-	}
-
-
-	bool WriteMultipleAnswer(std::string serverid, std::string questionname, std::string manswer, std::string manswername) {
-		std::ofstream ofile;
-		ofile.open("database\\multipleanswers\\" + serverid + " " + questionname + " " + manswer + ".txt");
-
-		ofile << manswername;
-		return true;
-	}
-
-	std::string ReadMultipleAnswer(std::string serverid, std::string questionname, std::string manswer) {
-		std::ifstream readFile;
-		readFile.open("database\\multipleanswers\\" + serverid + " " + questionname + " " + manswer + ".txt");
-		if (readFile.is_open()) {
-			std::string str;
-			while (readFile) {
-				getline(readFile, str);
-			}
-			return str;
-		}
-		return "-1";
-	}
-
-	std::string ReadLogChannel(std::string serverid) {
-		std::ifstream readFile;
-		readFile.open("database\\log\\" + serverid + ".txt");
-		if (readFile.is_open()) {
-			std::string str;
-			while (readFile) {
-				getline(readFile, str);
-			}
-			return str;
-		}
-		return "-1";
-	}
-
-	bool WriteLogChannel(std::string serverid, std::string channelid) {
-		std::ofstream ofile;
-		ofile.open("database\\log\\" + serverid + ".txt");
-
-		ofile << channelid;
-		return true;
-	}
-
-	int ReadServerHintTime(std::string serverid) {
-		std::ifstream readFile;
-		readFile.open("database\\hinttime\\" + serverid + ".txt");
-		if (readFile.is_open()) {
-			std::string str;
-			while (readFile) {
-				getline(readFile, str);
-			}
-			std::stringstream SS(str);
-			int i;
-			SS >> i;
-			return i;
-		}
-		return 60;
-	}
-
-	bool WriteServerHintTime(std::string serverid, int time) {
-		std::ofstream ofile;
-		ofile.open("database\\hinttime\\" + serverid + ".txt");
-
-		ofile << std::to_string(time);
-		return true;
-	}
-
-	std::vector<std::string> ReadServerQuestions(std::string serverid) {
-		std::vector<std::string> V;
-		V.clear();
-		std::ifstream readFile;
-		readFile.open("database\\answers\\" + serverid + ".txt");
-		if (readFile.is_open()) {
-			std::string str;
-			while (readFile) {
-				getline(readFile, str);
-				if (str != "") {
-					V.push_back(str);
-					str = "";
-				}
-			}
-			return V;
-		}
-		return V;
-	}
-
-	bool WriteServerQuestions(std::string serverid, std::vector<std::string> Questions) {
-		std::ofstream ofile;
-		ofile.open("database\\answers\\" + serverid + ".txt");
-
-		std::string S;
-
-		for (int i = 0; i < Questions.size(); i++) {
-			S += Questions[i] + "\n";
-		}
-
-		ofile << S;
-		return true;
-	}
-
-	bool ReadRelease(std::string serverid) {
-		std::ifstream readFile;
-		readFile.open("database\\release\\" + serverid + ".txt");
-		if (readFile.is_open()) {
-			std::string str;
-			while (readFile) {
-				getline(readFile, str);
-			}
-			std::stringstream SS(str);
-			int i;
-			SS >> i;
-			return i;
-		}
-		return 0;
-	}
-
-	bool WriteRelease(std::string serverid, bool b) {
-		std::ofstream ofile;
-		ofile.open("database\\release\\" + serverid + ".txt");
-
-		ofile << b ? "1" : "0";
-		return true;
-	}*/
-
 	long long ReadHintTime(std::string serverid, std::string questionname) {
 		std::ifstream readFile;
 #ifdef _WIN32
 		readFile.open("database\\hint\\" + serverid + " " + questionname + ".txt");
 #endif
 #ifdef linux
-		readFile.open("database/hint/" + serverid + " " + questionname + ".txt");
+		readFile.open("/home/phoenix/discord-bot/discord-bot/database/hint/" + serverid + " " + questionname + ".txt");
 #endif
 
 		if (readFile.is_open()) {
@@ -596,7 +339,7 @@ public:
 		ofile.open("database\\hint\\" + serverid + " " + questionname + ".txt");
 #endif
 #ifdef linux
-		ofile.open("database/hint/" + serverid + " " + questionname + ".txt");
+		ofile.open("/home/phoenix/discord-bot/discord-bot/database/hint/" + serverid + " " + questionname + ".txt");
 #endif
 
 		ofile << std::to_string(hintday);
@@ -609,7 +352,7 @@ public:
 		ofile.open("database\\questions\\" + Qi.serverid + " " + hexprint(Qi.name) + ".txt");
 #endif
 #ifdef linux
-		ofile.open("database/questions/" + Qi.serverid + " " + hexprint(Qi.name) + ".txt");
+		ofile.open("/home/phoenix/discord-bot/discord-bot/database/questions/" + Qi.serverid + " " + hexprint(Qi.name) + ".txt");
 #endif
 		std::string out;
 		out = "{{answer}}\n";
@@ -638,7 +381,7 @@ public:
 #endif
 #ifdef linux
 		printf("linux is detected!");
-		readFile.open("database/questions/" + serverid + " " + hexprint(questionname) + ".txt");
+		readFile.open("/home/phoenix/discord-bot/discord-bot/database/questions/" + serverid + " " + hexprint(questionname) + ".txt");
 #endif
 		ibot::Questioninfo Qi;
 		if (readFile.is_open()) {
@@ -733,7 +476,7 @@ public:
 			remove(("database\\questions\\" + serverid + " " + hexprint(questionname) + ".txt").c_str());
 #endif
 #ifdef linux
-			remove(("database/questions/" + serverid + " " + hexprint(questionname) + ".txt").c_str());
+			remove(("/home/phoenix/discord-bot/discord-bot/database/questions/" + serverid + " " + hexprint(questionname) + ".txt").c_str());
 #endif
 		}
 		Qi.serverid = serverid;
@@ -786,7 +529,7 @@ public:
 		ofile.open("database\\serverinfo\\" + Si.serverid + ".txt");
 #endif
 #ifdef linux
-		ofile.open("database/serverinfo/" + Si.serverid + ".txt");
+		ofile.open("/home/phoenix/discord-bot/discord-bot/database/serverinfo/" + Si.serverid + ".txt");
 #endif
 		std::string out;
 		out = Si.release?"1":"0";
@@ -801,7 +544,7 @@ public:
 		readFile.open("database\\serverinfo\\" + serverid + ".txt");
 #endif
 #ifdef linux
-		readFile.open("database/serverinfo/" + serverid + ".txt");
+		readFile.open("/home/phoenix/discord-bot/discord-bot/database/serverinfo/" + serverid + ".txt");
 #endif
 		ibot::Serverinfo Si;
 		if (readFile.is_open()) {
