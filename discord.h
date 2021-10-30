@@ -1,6 +1,5 @@
 #include "sleepy_discord/sleepy_discord.h"
 #include "IO_file.h"
-#include "dirent.h"
 #include <cstdio>
 #include <random>
 #include <cstring>
@@ -10,12 +9,11 @@
 #include <algorithm>
 #include <iostream>
 #include <locale>
-#include <filesystem>
 #if defined(_WIN32) || defined(_WIN64)
 #include <codecvt>
 #include <Windows.h>
 #include <Mmsystem.h>
-#include <direct.h>
+#include "dirent.h"
 #else
 #include <stdio.h>
 #include <stdlib.h>

@@ -1728,6 +1728,14 @@ public:
 						sendMessage(ReadServerInfo(interaction.serverID).logchannel, GetTextA("log-answer-right", std::to_string(T).c_str(), I.c_str(), ToText(Q).c_str(), ToText(A).c_str()));
 					}
 					response.data.content = GetTextA("answer_right", Q.c_str());
+					/*--------------------------------*/
+					if (ReadQuestion(interaction.serverID, Q).channelid == "KICKTHISUSER") {
+						sendDM(interaction.member.ID, GetTextA("imaginary-start"));
+						sendDM(interaction.member.ID, GetTextA("imaginary-start-link"));
+						kickMember(interaction.serverID, interaction.member.ID);
+						return;
+					}
+					/*--------------------------------*/
 					if (ReadQuestion(interaction.serverID, Q).channelid != inv) {
 						response.data.content += GetTextA("answer_con_c", ReadQuestion(interaction.serverID, Q).channelid.c_str());
 						Channel C = getChannel(ReadQuestion(interaction.serverID, Q).channelid);
