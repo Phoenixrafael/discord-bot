@@ -322,9 +322,9 @@ public:
 
 		if (readFile.is_open()) {
 			std::string str;
-			ReplaceAll(str, "\r", "");
 			while (readFile) {
 				getline(readFile, str);
+			ReplaceAll(str, "\n", "");
 			}
 			std::stringstream SS(str);
 			long long i;
@@ -396,8 +396,8 @@ public:
 			int mit = 0;
 			ibot::MultipleAnswer M;
 			while (readFile) {
-				ReplaceAll(str, "\r", "");
 				getline(readFile, str);
+				ReplaceAll(str, "\n", "");
 				printf("- %s -\n- %s -\n", str.c_str(), hexprint(str).c_str());
 				if (str == "{{answer}}"
 					|| str == "{{channelid}}"
@@ -557,11 +557,11 @@ public:
 		if (readFile.is_open()) {
 			Si.serverid = serverid;
 			std::string str;
-			ReplaceAll(str, "\r", "");
 			int i = 0;
 			int in;
 			while (readFile) {
 				getline(readFile, str);
+				ReplaceAll(str, "\n", "");
 				std::stringstream SS(str);
 				switch (i) {
 					case 0:
