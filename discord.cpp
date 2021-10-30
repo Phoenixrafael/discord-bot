@@ -385,8 +385,9 @@ public:
 		readFile.open("/home/phoenix/discord-bot/build/database/questions/" + serverid + "-" + hexprint(questionname) + ".txt");
 #endif
 		ibot::Questioninfo Qi;
+		printf("\"%s, %s\"\n", serverid.c_str(), hexprint(questionname).c_str());
 		if (readFile.is_open()) {
-			printf("readfile is detected. : \"%s, %s\"\n", serverid.c_str(), hexprint(questionname).c_str());
+			printf("readfile is detected.\n");
 			Qi.serverid = serverid;
 			Qi.name = questionname;
 			std::string str;
