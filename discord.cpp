@@ -376,11 +376,12 @@ public:
 
 	ibot::Questioninfo ReadQuestion(std::string serverid, std::string questionname) {
 		std::ifstream readFile;
+		printf("ReadQuestion is called.\n");
 #ifdef _WIN32
 		readFile.open("database\\questions\\" + serverid + "-" + hexprint(questionname) + ".txt");
 #endif
 #ifdef linux
-		printf("linux is detected!");
+		printf("linux is detected!\n");
 		readFile.open("/home/phoenix/discord-bot/build/database/questions/" + serverid + "-" + hexprint(questionname) + ".txt");
 #endif
 		ibot::Questioninfo Qi;
@@ -458,6 +459,7 @@ public:
 				str == "";
 			}
 		}
+		printf("ReadQuestion returned Qi{name:%s, answer:%s}\n", Qi.name.c_str(), Qi.answer.c_str());
 		return Qi;
 	}
 
