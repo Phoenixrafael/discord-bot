@@ -317,7 +317,7 @@ public:
 		readFile.open("database\\hint\\" + serverid + "-" + questionname + ".txt");
 #endif
 #ifdef linux
-		readFile.open("/home/phoenix/discord-bot/discord-bot/database/hint/" + serverid + " " + questionname + ".txt");
+		readFile.open("/home/phoenix/discord-bot/discord-bot/database/hint/" + serverid + "-" + questionname + ".txt");
 #endif
 
 		if (readFile.is_open()) {
@@ -339,7 +339,7 @@ public:
 		ofile.open("database\\hint\\" + serverid + "-" + questionname + ".txt");
 #endif
 #ifdef linux
-		ofile.open("/home/phoenix/discord-bot/discord-bot/database/hint/" + serverid + " " + questionname + ".txt");
+		ofile.open("/home/phoenix/discord-bot/discord-bot/database/hint/" + serverid + "-" + questionname + ".txt");
 #endif
 
 		ofile << std::to_string(hintday);
@@ -352,7 +352,7 @@ public:
 		ofile.open("database\\questions\\" + Qi.serverid + "-" + hexprint(Qi.name) + ".txt");
 #endif
 #ifdef linux
-		ofile.open("/home/phoenix/discord-bot/discord-bot/database/questions/" + Qi.serverid + " " + hexprint(Qi.name) + ".txt");
+		ofile.open("/home/phoenix/discord-bot/discord-bot/database/questions/" + Qi.serverid + "-" + hexprint(Qi.name) + ".txt");
 #endif
 		std::string out;
 		out = "{{answer}}\n";
@@ -381,7 +381,7 @@ public:
 #endif
 #ifdef linux
 		printf("linux is detected!");
-		readFile.open("/home/phoenix/discord-bot/discord-bot/database/questions/" + serverid + " " + hexprint(questionname) + ".txt");
+		readFile.open("/home/phoenix/discord-bot/discord-bot/database/questions/" + serverid + "-" + hexprint(questionname) + ".txt");
 #endif
 		ibot::Questioninfo Qi;
 		if (readFile.is_open()) {
@@ -476,7 +476,7 @@ public:
 			remove(("database\\questions\\" + serverid + "-" + hexprint(questionname) + ".txt").c_str());
 #endif
 #ifdef linux
-			remove(("/home/phoenix/discord-bot/discord-bot/database/questions/" + serverid + " " + hexprint(questionname) + ".txt").c_str());
+			remove(("/home/phoenix/discord-bot/discord-bot/database/questions/" + serverid + "-" + hexprint(questionname) + ".txt").c_str());
 #endif
 		}
 		Qi.serverid = serverid;
