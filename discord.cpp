@@ -396,7 +396,7 @@ public:
 			ibot::MultipleAnswer M;
 			while (readFile) {
 				getline(readFile, str);
-				printf("- %s - - %s -\n", str.c_str(), hexprint(str).c_str());
+				printf("- %s -\n- %s -\n", str.c_str(), hexprint(str).c_str());
 				if (str == "{{answer}}"
 					|| str == "{{channelid}}"
 					|| str == "{{roleid}}"
