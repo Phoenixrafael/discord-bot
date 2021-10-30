@@ -246,7 +246,7 @@ public:
 	time_t uptimet = time(0);
 	long long uptime = uptimet;
 
-	SleepyDiscord::ObjectResponse<SleepyDiscord::Message> sendPrintf(SleepyDiscord::Snowflake<SleepyDiscord::Channel> channelID, const char* format, ...)
+	SleepyDiscord::ObjectResponse<SleepyDiscord::Message> MyClientClass::sendPrintf(SleepyDiscord::Snowflake<SleepyDiscord::Channel> channelID, const char* format, ...)
 	{
 		char szBuf[1024] = { 0, };
 
@@ -570,7 +570,13 @@ public:
 
 	long long ReadHintTime(std::string serverid, std::string questionname) {
 		std::ifstream readFile;
+#ifdef _WIN32
 		readFile.open("database\\hint\\" + serverid + " " + questionname + ".txt");
+#endif
+#ifdef linux
+		readFile.open("database/hint/" + serverid + " " + questionname + ".txt");
+#endif
+
 		if (readFile.is_open()) {
 			std::string str;
 			while (readFile) {
@@ -586,7 +592,12 @@ public:
 
 	bool WriteHintTime(std::string serverid, std::string questionname, int hintday) {
 		std::ofstream ofile;
+#ifdef _WIN32
 		ofile.open("database\\hint\\" + serverid + " " + questionname + ".txt");
+#endif
+#ifdef linux
+		readFile.open("database/hint/" + serverid + " " + questionname + ".txt");
+#endif
 
 		ofile << std::to_string(hintday);
 		return true;
@@ -594,7 +605,12 @@ public:
 
 	bool WriteQuestion(ibot::Questioninfo Qi) {
 		std::ofstream ofile;
+#ifdef _WIN32
 		ofile.open("database\\questions\\" + Qi.serverid + " " + hexprint(Qi.name) + ".txt");
+#endif
+#ifdef linux
+		readFile.open("database/questions/" + serverid + " " + questionname + ".txt");
+#endif
 		std::string out;
 		out = "{{answer}}\n";
 		out += Qi.answer + "\n";
@@ -617,7 +633,12 @@ public:
 
 	ibot::Questioninfo ReadQuestion(std::string serverid, std::string questionname) {
 		std::ifstream readFile;
+#ifdef _WIN32
 		readFile.open("database\\questions\\" + serverid + " " + hexprint(questionname) + ".txt");
+#endif
+#ifdef linux
+		readFile.open("database/questions/" + serverid + " " + questionname + ".txt");
+#endif
 		ibot::Questioninfo Qi;
 		if (readFile.is_open()) {
 			Qi.serverid = serverid;
@@ -707,7 +728,12 @@ public:
 		ibot::Questioninfo Qi = ReadQuestion(serverid, questionname);
 		if (Qi.name == inv)
 		if (answer == inv && channelid == inv && roleid == inv && hint == inv && manswer.size() == 0) {
+#ifdef _WIN32
 			remove(("database\\questions\\" + serverid + " " + hexprint(questionname) + ".txt").c_str());
+#endif
+#ifdef linux
+			readFile.open("database/questions/" + serverid + " " + questionname + ".txt");
+#endif
 		}
 		Qi.serverid = serverid;
 		Qi.name = questionname;
@@ -755,7 +781,12 @@ public:
 
 	bool WriteServerInfo(ibot::Serverinfo Si) {
 		std::ofstream ofile;
+#ifdef _WIN32
 		ofile.open("database\\serverinfo\\" + Si.serverid + ".txt");
+#endif
+#ifdef linux
+		readFile.open("database/serverinfo/" + serverid + " " + questionname + ".txt");
+#endif
 		std::string out;
 		out = Si.release?"1":"0";
 		out += "\n" + std::to_string(Si.hinttime) + "\n" + Si.logchannel + "\n";
@@ -765,7 +796,12 @@ public:
 
 	ibot::Serverinfo ReadServerInfo(std::string serverid) {
 		std::ifstream readFile;
+#ifdef _WIN32
 		readFile.open("database\\serverinfo\\" + serverid + ".txt");
+#endif
+#ifdef linux
+		readFile.open("database/serverinfo/" + serverid + " " + questionname + ".txt");
+#endif
 		ibot::Serverinfo Si;
 		if (readFile.is_open()) {
 			Si.serverid = serverid;
