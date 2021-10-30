@@ -386,6 +386,7 @@ public:
 #endif
 		ibot::Questioninfo Qi;
 		if (readFile.is_open()) {
+			printf("readfile is detected. : \"%s, %s\"\n", serverid.c_str(), hexprint(questionname).c_str());
 			Qi.serverid = serverid;
 			Qi.name = questionname;
 			std::string str;
