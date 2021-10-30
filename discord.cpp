@@ -246,7 +246,7 @@ public:
 	time_t uptimet = time(0);
 	long long uptime = uptimet;
 
-	SleepyDiscord::ObjectResponse<SleepyDiscord::Message> MyClientClass::sendPrintf(SleepyDiscord::Snowflake<SleepyDiscord::Channel> channelID, const char* format, ...)
+	SleepyDiscord::ObjectResponse<SleepyDiscord::Message> sendPrintf(SleepyDiscord::Snowflake<SleepyDiscord::Channel> channelID, const char* format, ...)
 	{
 		char szBuf[1024] = { 0, };
 
@@ -290,7 +290,7 @@ public:
 			}
 			else {
 				output = "ERROR!";
-				return false;
+				return "";
 			}
 			i++;
 			if ('0' <= str[i] && '9' >= str[i]) {
@@ -301,7 +301,7 @@ public:
 			}
 			else {
 				output = "ERROR!";
-				return false;
+				return "";
 			}
 			buf[(i - 1) / 2] = a;
 			buf[(i - 1) / 2 + 1] = '\0';
@@ -1443,7 +1443,7 @@ public:
 					editChannelPermissions(C.at(i), O, Permission::ALL, Permission::NONE, "1");
 				}
 			}
-			else if (message.startsWith("\\invitelinks")) {
+			/*else if (message.startsWith("\\invitelinks")) {
 				std::string InviteLinks;
 				for (int i = 0; i < SL.size(); i++) {
 					std::vector<Channel> C = getServerChannels(SL.at(i)).vector();
@@ -1467,7 +1467,7 @@ public:
 					}
 				}
 				sendMessage(message.channelID, InviteLinks);
-			}
+			}*/
 
 			else if (message.startsWith("\\teha")) {
 				int l;
