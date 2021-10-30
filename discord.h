@@ -138,7 +138,7 @@ namespace ibot {
 			std::vector<std::string> R;
 			DIR* dir;
 			struct dirent* ent;
-			if ((dir = opendir("database\\questions\\")) != NULL) {
+			if ((dir = opendir("database/questions/")) != NULL) {
 				while ((ent = readdir(dir)) != NULL) {
 					std::string S = ent->d_name;
 					S = S.substr(0, S.size() - 4);
