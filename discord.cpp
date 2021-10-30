@@ -246,7 +246,7 @@ public:
 	time_t uptimet = time(0);
 	long long uptime = uptimet;
 
-	SleepyDiscord::ObjectResponse<SleepyDiscord::Message> MyClientClass::sendPrintf(SleepyDiscord::Snowflake<SleepyDiscord::Channel> channelID, const char* format, ...)
+	SleepyDiscord::ObjectResponse<SleepyDiscord::Message> sendPrintf(SleepyDiscord::Snowflake<SleepyDiscord::Channel> channelID, const char* format, ...)
 	{
 		char szBuf[1024] = { 0, };
 
