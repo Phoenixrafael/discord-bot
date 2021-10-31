@@ -264,7 +264,7 @@ public:
 		char buf[128];
 		const char* p = str.c_str();
 		for (int i = 0; i < (int)str.length(); i++) {
-			//printf("i:%d, buf:%s, p:%x\n", i, buf, *(p + i));
+			printf("i:%d, buf:%s, p:%x\n", i, buf, *(p + i));
 			sprintf(buf + ((unsigned long long)i * 2), "%02x", *((unsigned char*)p + i));
 			buf[i * 2 + 2] = '\0';
 		}
