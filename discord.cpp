@@ -398,7 +398,8 @@ public:
 			while (readFile) {
 				getline(readFile, str);
 				ReplaceAll(str, "\r", "");
-				printf("- %s -\n- %s -\n", str.c_str(), hexprint(str).c_str());
+				printf("- %s -\n", str.c_str());
+				printf("- %s -\n", hexprint(str).c_str());
 				if (str == "{{answer}}"
 					|| str == "{{channelid}}"
 					|| str == "{{roleid}}"
