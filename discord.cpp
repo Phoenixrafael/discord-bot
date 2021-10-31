@@ -261,10 +261,10 @@ public:
 	std::string hexprint(std::string str)
 	{
 		std::string output;
-		char buf[128];
+		char buf[1000];
 		const char* p = str.c_str();
 		for (int i = 0; i < (int)str.length(); i++) {
-			printf("i:%d, buf:%s, p:%x\n", i, buf, *(p + i));
+			//printf("i:%d, buf:%s, p:%x\n", i, buf, *(p + i));
 			sprintf(buf + ((unsigned long long)i * 2), "%02x", *((unsigned char*)p + i));
 			buf[i * 2 + 2] = '\0';
 		}
