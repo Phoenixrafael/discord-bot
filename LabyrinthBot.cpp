@@ -238,7 +238,7 @@ const char* TextManager::GetText(const char* key, ...)
 	return current.c_str();
 }
 
-class MyClientClass : public SleepyDiscord::DiscordClient {
+class LabyrinthBot : public SleepyDiscord::DiscordClient {
 public:
 	using SleepyDiscord::DiscordClient::DiscordClient;
 
@@ -630,6 +630,18 @@ public:
 			return ret;
 		}
 		return S;
+	}
+
+	std::string GetTextL(const char* key, ...) {
+		std::string ret = GetTextA(key);
+		ReplaceAll(ret, "\n", "");
+		ReplaceAll(ret, "\r", "");
+		return ret;
+	}
+	std::string GetTextR(const char* key, ...) {
+		std::string ret = GetTextA(key);
+		ReplaceAll(ret, "\r", "");
+		return ret;
 	}
 
 	void onMessage(SleepyDiscord::Message message) override {
@@ -1306,7 +1318,7 @@ public:
 			std::string E = emoji.name;
 			printf("%s\n", hexprint(E).c_str());
 			deleteAllReactions(880989430989594634, 882186796329472000);
-			if (hexprint(E) + "\n" == GetTextA("imaginary-icon")) {
+			if (hexprint(E) + "\n" == GetTextL("imaginary-icon")) {
 				addRole(880642251611574324, userID, 888353753500094494);
 			}
 		}
@@ -1396,6 +1408,8 @@ public:
 		createGlobalAppCommand(AppID, "hint", GetTextA("hint"), option);*/
 
 		//createGlobalAppCommand(AppID, "servers", GetTextA("servers"));
+
+
 	}
 
 	void onInteraction(Interaction interaction) override {
@@ -1639,14 +1653,15 @@ public:
 
 int main()
 {
-	printf("/i-bot 1.0.ver execute\n");
+	printf("LabyrinthBot execute\n");
 	textManager.Initialize("default.txt");
-	MyClientClass client(Token, SleepyDiscord::USER_CONTROLED_THREADS);
-	client.setIntents(Intent::SERVER_MESSAGES + Intent::DIRECT_MESSAGES + Intent::SERVER_MESSAGE_REACTIONS);
+
+	LabyrinthBot client(LabyToken, SleepyDiscord::Mode::USER_CONTROLED_THREADS);
+	client.setIntents(Intent::SERVER_MESSAGES, Intent::DIRECT_MESSAGES, Intent::SERVER_MESSAGE_REACTIONS);
 	client.run();
 }
 
-// /I-bot server script
+// LabyrinthBot server script
 
 // Made by Q_
 // Qㅡ#0283
