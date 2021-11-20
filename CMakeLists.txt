@@ -7,12 +7,8 @@ find_package(sleepy-discord CONFIG REQUIRED)
 
 if(WIN32) 
 	target_link_libraries(labyrinth sleepy-discord)
-else()
-	target_link_libraries(labyrinth sleepy-discord dl)
-endif()
-
-if(WIN32) 
 	target_link_libraries(qasino sleepy-discord)
 else()
+	target_link_libraries(labyrinth sleepy-discord dl)
 	target_link_libraries(qasino sleepy-discord dl)
 endif()
