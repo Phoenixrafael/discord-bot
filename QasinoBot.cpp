@@ -882,7 +882,12 @@ public:
 				SendMessageParams Sp;
 				Sp.content = GetTextA("stock_chart_success", Qb.nick.c_str(), stocks.at(stn).name.c_str(), std::to_string(stocks.at(stn).value[99]).c_str());
 				Sp.channelID = interaction.channelID;
+#ifdef _WIN32
 				uploadFile(Sp, "database\\stocks\\" + stocks.at(stn).name + "Chart.md");
+#endif
+#ifdef linux
+				uploadFile(Sp, "/home/phoenix/discord-bot/build/database/stocks/" + stocks.at(stn).name + "Chart.md");
+#endif
 			}
 		}
 		else if (interaction.data.name == "nick") {
