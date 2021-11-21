@@ -602,7 +602,7 @@ public:
 
 	int RollDice(std::string ChannelID, bool iseasteregg = false, float time = 1, std::string name = "~~~") {
 		if (name == "~~~") {
-			GetTextL("dice-title");
+			name = GetTextL("dice-title");
 		}
 		Embed E;
 		EmbedField EF;
@@ -967,7 +967,8 @@ public:
 			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 			response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
 			createInteractionResponse(interaction, interaction.token, response);
-			RollDice(interaction.channelID, false, 3);
+			qasino::qambler Qb = readQamblerInfo(interaction.member.ID);
+			RollDice(interaction.channelID, false, 3, GetTextL("dice-title-w-nick", Qb.nick.c_str()));
 		}
 		else {
 
