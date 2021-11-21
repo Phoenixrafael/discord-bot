@@ -968,7 +968,8 @@ public:
 			response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
 			createInteractionResponse(interaction, interaction.token, response);
 			qasino::qambler Qb = readQamblerInfo(interaction.member.ID);
-			RollDice(interaction.channelID, false, 3, GetTextL("dice-title-w-nick", Qb.nick.c_str())); 
+			std::string title = GetTextL("dice-title-w-nick", Qb.nick.c_str());
+			RollDice(interaction.channelID, false, 3, title); 
 		}
 		else {
 
