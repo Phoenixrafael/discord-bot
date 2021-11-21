@@ -3,6 +3,33 @@ TextManager textManager(10);
 
 using namespace SleepyDiscord;
 
+/*class MultiGameInterface {
+protected:
+	bool _play; // playing
+	int _betting; //betting money player1, 2
+	std::vector<SleepyDiscord::User> _player;
+	std::vector<std::string> _reactions;
+
+	bool IsPlayer(std::string id);
+
+public:
+	virtual void Clear(void);
+
+	virtual const char* GetGameName(void) = 0;
+
+	bool CommandStarter(int betting);
+	virtual bool Is(void);
+	virtual bool Permit(SleepyDiscord::Message& message);
+	virtual bool LocalPermit() = 0;
+	virtual bool Process(SleepyDiscord::Message& message);
+	virtual void Set(std::string str, SleepyDiscord::Message message);
+	virtual bool OnJoin(SleepyDiscord::Message& message) = 0;
+};
+
+bool MultiGameInterface::CommandStarter(int betting) {
+
+	_betting = betting;
+}*/
 struct TextManager::bytemask TextManager::_masks[6] = {
 	{ (unsigned char)0x80, (unsigned char)0x00 }, // 1byte
 	{ (unsigned char)0xE0, (unsigned char)0xC0 }, // 2byte
