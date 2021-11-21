@@ -719,9 +719,9 @@ public:
 		option.at(0).name = "money";
 		option.at(0).description = GetTextA("beg-money");
 		option.at(0).isRequired = true;
-		createGlobalAppCommand(QasinoAppID, "beg", GetTextA("beg"), option);*/
+		createGlobalAppCommand(QasinoAppID, "beg", GetTextA("beg"), option);
 
-		createGlobalAppCommand(QasinoAppID, "dice", GetTextA("dice"));
+		createGlobalAppCommand(QasinoAppID, "dice", GetTextA("dice"));*/
 
 		stocks.push_back(qasino::CreateStock("Stock", 100, 20, 1, 3000));
 		stocks.push_back(qasino::CreateStock("Inverse", 100, 20, 1, 3000));
