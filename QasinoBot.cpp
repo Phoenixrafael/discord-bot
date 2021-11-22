@@ -394,6 +394,7 @@ public:
 			while (readFile) {
 				getline(readFile, str);
 				ReplaceAll(str, "\r", "");
+				ReplaceAll(str, "\n", "");
 				if (str == div_ch) {
 					i++;
 					if (i >= 100) {
@@ -426,6 +427,7 @@ public:
 	}
 
 	bool writeQamblerInfo(qasino::qambler Qb) {
+		printf("writeQamblerInfo [%s]", hexprint(Qb.ID).c_str());
 		std::ofstream ofile;
 #ifdef _WIN32
 		ofile.open("database\\qamblers\\" + Qb.ID + ".txt");
@@ -457,6 +459,7 @@ public:
 			while (readFile) {
 				getline(readFile, str);
 				ReplaceAll(str, "\r", "");
+				ReplaceAll(str, "\n", "");
 				std::stringstream SS(str);
 				int a;
 				SS >> a;
