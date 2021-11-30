@@ -601,7 +601,7 @@ const char* TextManager::GetText(const char* key, ...)
 			for (int i = 0; i < 100; i++) {
 				Qb.info[i] = "0";
 			}
-			Qb.SetInt(qasino::SYS_MONEY, 30000);
+			Qb.SetInt(qasino::SYS_MONEY, 100000);
 			writeQamblerInfo(Qb);
 		}
 		if (Qb.nick == "") {
