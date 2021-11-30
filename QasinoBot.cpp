@@ -1,8 +1,266 @@
-#include "discord.h"
+#include "QasinoHeader.h"
 TextManager textManager(10);
-
+QasinoBot* client;
 using namespace SleepyDiscord;
 
+std::string hexprint(std::string str)
+{
+	std::string output;
+	char buf[1000];
+	const char* p = str.c_str();
+	for (int i = 0; i < (int)str.length(); i++) {
+		//printf("i:%d, buf:%s, p:%x\n", i, buf, *(p + i));
+		sprintf(buf + ((unsigned long long)i * 2), "%02x", *((unsigned char*)p + i));
+		buf[i * 2 + 2] = '\0';
+	}
+	buf[127] = '\0';
+	output = buf;
+	return output;
+}
+
+std::string hexdeprint(std::string inpstr)
+{
+	std::string output;
+	char str[1000];
+	strcpy(str, inpstr.c_str());
+	char buf[1000];
+	int a;
+	for (int i = 0; i < (int)inpstr.length(); i++) {
+		a = 0;
+		if ('0' <= str[i] && '9' >= str[i]) {
+			a += 16 * (str[i] - '0');
+		}
+		else if ('a' <= str[i] && 'f' >= str[i]) {
+			a += 16 * (str[i] - 'a' + 10);
+		}
+		else {
+			output = "ERROR!";
+			return "";
+		}
+		i++;
+		if ('0' <= str[i] && '9' >= str[i]) {
+			a += str[i] - '0';
+		}
+		else if ('a' <= str[i] && 'f' >= str[i]) {
+			a += str[i] - 'a' + 10;
+		}
+		else {
+			output = "ERROR!";
+			return "";
+		}
+		buf[(i - 1) / 2] = a;
+		buf[(i - 1) / 2 + 1] = '\0';
+	}
+	buf[999] = '\0';
+	output = buf;
+	return output;
+}
+
+std::string replaceAll(std::string& str, const std::string& from, const std::string& to) {
+	size_t start_pos = 0;
+	while ((start_pos = str.find(from, start_pos)) != std::string::npos)
+	{
+		str.replace(start_pos, from.length(), to);
+		start_pos += to.length();
+	}
+	return str;
+}
+
+std::string toText(std::string inp) {
+	replaceAll(inp, std::string("`"), std::string("'"));
+	inp = "`" + inp + "`";
+	return inp;
+}
+
+bool SoloGame::OnStart(Interaction interaction) {
+	_channel = client->getChannel(interaction.channelID);
+	_player = client->readQamblerInfo(interaction.member.ID);
+	_playing = true;
+	_player.ChangeInt(qasino::SYS_IS_PLAYING, 1);
+	_gameID = interaction.ID;
+	_player.info[qasino::SYS_GAMEID] = _gameID;
+	_betting = interaction.data.options.at(1).value.GetInt();
+	_displayname = client->GetTextL(("solo-" + _name).c_str());
+
+	if (_betting < _leastbet) {
+		SleepyDiscord::Interaction::Response response;
+		response.data.content = GetTextA("solo-game-betting-error");
+		response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+		response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
+		client->createInteractionResponse(interaction, interaction.token, response);
+		Clear();
+		return false;
+	}
+	if (_player.GetInt(qasino::SYS_GAME_CHIP) < _betting) {
+		SleepyDiscord::Interaction::Response response;
+		response.data.content = GetTextA("solo-game-chip-error");
+		response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+		response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
+		client->createInteractionResponse(interaction, interaction.token, response);
+		Clear();
+		return false;
+	}
+
+	SleepyDiscord::Interaction::Response response;
+	response.data.content = GetTextA("solo-game-start", _displayname.c_str(), std::to_string(_betting).c_str());
+	response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+	client->createInteractionResponse(interaction, interaction.token, response);
+	_player.SetInt(qasino::SYS_GAME_CHIP, -1 * _betting);
+	client->writeQamblerInfo(_player);
+
+	return true;
+}
+
+bool SoloGame::Process(Interaction interaction, bool start = false) {
+	return true;
+}
+
+bool SoloGame::Clear() {
+	_playing = false;
+	_player.SetInt(qasino::SYS_IS_PLAYING, 0);
+	_player.info[qasino::SYS_GAMEID] = "-1";
+	_gameID = -1;
+	return false;
+}
+
+bool DiceBet::Clear() {
+	_bet = -1;
+	_count = 0;
+	SoloGame::Clear();
+	return true;
+}
+
+bool DiceBet::Process(Interaction interaction, bool start = false) {
+	if (start) {
+		SendMessageParams sP;
+		sP.content = GetTextA("dice-bet-start");
+		sP.channelID = interaction.channelID;
+		auto selectmenus = std::make_shared<SelectMenu>();
+		SelectMenu::Option selectOptions;
+		selectOptions.value = "101010.5";
+		selectOptions.label = client->GetTextL("dice-bet-odd");
+		selectOptions.description = client->GetTextL("dice-bet-odd-des");
+		selectmenus->options.push_back(selectOptions);
+		selectOptions.value = "010101.5";
+		selectOptions.label = client->GetTextL("dice-bet-even");
+		selectOptions.description = client->GetTextL("dice-bet-even-des");
+		selectmenus->options.push_back(selectOptions);
+		selectOptions.value = "011010.5";
+		selectOptions.label = client->GetTextL("dice-bet-prime");
+		selectOptions.description = client->GetTextL("dice-bet-prime-des");
+		selectmenus->options.push_back(selectOptions);
+		selectOptions.value = "100001.7";
+		selectOptions.label = client->GetTextL("dice-bet-oneorsix");
+		selectOptions.description = client->GetTextL("dice-bet-oneorsix-des");
+		selectmenus->options.push_back(selectOptions);
+		selectOptions.value = "011110.2";
+		selectOptions.label = client->GetTextL("dice-bet-notonenorsix");
+		selectOptions.description = client->GetTextL("dice-bet-notonenorsix-des");
+		selectmenus->options.push_back(selectOptions);
+		selectmenus->customID = "solo-" + GetID() + "-start";
+
+		auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
+		actionRow->components.push_back(selectmenus);
+		sP.components.push_back(actionRow);
+		client->sendMessage(sP);
+	}
+	else {
+		std::vector<std::string> SplitID = client->split(interaction.data.customID, '-');
+		if (SplitID[2] == "start") {
+			_bet = interaction.data.values.front();
+			_table = GetBetting() * 7/10;
+			SplitID[2] = "go";
+		}
+		if (SplitID[2] == "go") {
+			_count++;
+			int result = client->RollDice(interaction.channelID, false, 0.5, GetTextA("dice-bet-dicelabel", std::to_string(_count).c_str()));
+			if (_bet[result - 1] == '1') {
+				_table = _table + (_bet[7] - '1' + 1) * _table / 10 * _count;
+				SleepyDiscord::Interaction::Response response;
+				response.data.embeds.push_back(Success(result));
+
+				SendMessageParams Sp;
+				Sp.channelID = interaction.channelID;
+
+				auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
+				auto button1 = std::make_shared<SleepyDiscord::Button>();
+				button1->style = SleepyDiscord::ButtonStyle::Success;
+				button1->label = GetTextA("dice-bet-go");
+				button1->customID = "solo-" + GetID() + "-go";
+				button1->disabled = false;
+				actionRow->components.push_back(button1);
+				auto button2 = std::make_shared<SleepyDiscord::Button>();
+				button2->style = SleepyDiscord::ButtonStyle::Danger;
+				button2->label = GetTextA("dice-bet-stop");
+				button2->customID = "solo-" + GetID() + "-stop";
+				button2->disabled = false;
+				actionRow->components.push_back(button2);
+
+				Sp.components.push_back(actionRow);
+				Sp.content = "_ _";
+				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+				client->createInteractionResponse(interaction, interaction.token, response);
+				client->sendMessage(Sp);
+			}
+			else {
+				SleepyDiscord::Interaction::Response response;
+				response.data.embeds.push_back(Fail(result));
+				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+				client->createInteractionResponse(interaction, interaction.token, response);
+				Clear();
+			}
+		}
+		else {
+			_player.ChangeInt(qasino::SYS_GAME_CHIP, _table);
+			client->writeQamblerInfo(_player);
+			SleepyDiscord::Interaction::Response response;
+			response.data.embeds.push_back(Stop());
+			response.data.content = "_ _";
+			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+			client->createInteractionResponse(interaction, interaction.token, response);
+			Clear();
+		}
+	}
+	return true;
+}
+
+Embed DiceBet::Success(int result) {
+	Embed E;
+	E.color = 8453970;
+	E.title = client->GetTextL("dice-bet-success-title");
+	E.description = client->GetTextL("dice-bet-success-description");
+	EmbedField EF;
+	EF.name = client->GetTextL("dice-bet-success-ifgo");
+	EF.value = std::to_string(_table + (_bet[7] - '1' + 1) * _table / 10 * (_count+1));
+	E.fields.push_back(EF);
+	EF.name = client->GetTextL("dice-bet-success-ifstop");
+	EF.value = std::to_string(_table);
+	E.fields.push_back(EF);
+	return E;
+}
+
+Embed DiceBet::Fail(int result) {
+	Embed E;
+	E.color = 12189724;
+	E.title = client->GetTextL("dice-bet-fail-title");
+	E.description = client->GetTextL("dice-bet-fail-description");
+	return E;
+}
+
+Embed DiceBet::Stop() {
+	Embed E;
+	E.color = 16756224;
+	E.title = client->GetTextL("dice-bet-stop-title");
+	E.description = client->GetTextL("dice-bet-stop-description");
+	EmbedField EF;
+	EF.name = client->GetTextL("dice-bet-stop-before");
+	EF.value = std::to_string(_betting);
+	E.fields.push_back(EF);
+	EF.name = client->GetTextL("dice-bet-stop-after");
+	EF.value = std::to_string(_table);
+	E.fields.push_back(EF);
+	return E;
+}
 /*class MultiGameInterface {
 protected:
 	bool _play; // playing
@@ -264,33 +522,27 @@ const char* TextManager::GetText(const char* key, ...)
 
 	return current.c_str();
 }
-
-class QasinoBot : public SleepyDiscord::DiscordClient {
-public:
-	using SleepyDiscord::DiscordClient::DiscordClient;
-
-	std::string GetTextL(const char* key, ...) {
+	std::string QasinoBot::GetTextL(const char* key, ...) {
 		std::string ret = GetTextA(key);
-		ReplaceAll(ret, "\n", "");
-		ReplaceAll(ret, "\r", "");
+		replaceAll(ret, "\n", "");
+		replaceAll(ret, "\r", "");
 		return ret;
 	}
-	std::string GetTextR(const char* key, ...) {
+	std::string QasinoBot::GetTextR(const char* key, ...) {
 		std::string ret = GetTextA(key);
-		ReplaceAll(ret, "\r", "");
+		replaceAll(ret, "\r", "");
 		return ret;
 	}
 
-	std::vector<Server> SL = getServers().vector();
-	time_t uptimet = time(0);
-	long long uptime = uptimet;
+	void QasinoBot::Clear() {
+		_sl = getServers().vector();
+		_uptimet = time(0);
+		_uptime = _uptimet;
 
-	Server QasinoServer = getServer(QasinoServerID);
+		QasinoServer = client->getServer(QasinoServerID);
+	}
 
-
-	std::vector<qasino::stock> stocks;
-
-	SleepyDiscord::ObjectResponse<SleepyDiscord::Message> sendPrintf(SleepyDiscord::Snowflake<SleepyDiscord::Channel> channelID, const char* format, ...)
+	SleepyDiscord::ObjectResponse<SleepyDiscord::Message> QasinoBot::sendPrintf(SleepyDiscord::Snowflake<SleepyDiscord::Channel> channelID, const char* format, ...)
 	{
 		char szBuf[1024] = { 0, };
 
@@ -302,82 +554,13 @@ public:
 		return sendMessage(channelID, szBuf);
 	}
 
-	std::string hexprint(std::string str)
-	{
-		std::string output;
-		char buf[1000];
-		const char* p = str.c_str();
-		for (int i = 0; i < (int)str.length(); i++) {
-			//printf("i:%d, buf:%s, p:%x\n", i, buf, *(p + i));
-			sprintf(buf + ((unsigned long long)i * 2), "%02x", *((unsigned char*)p + i));
-			buf[i * 2 + 2] = '\0';
-		}
-		buf[127] = '\0';
-		output = buf;
-		return output;
-	}
-
-	std::string hexdeprint(std::string inpstr)
-	{
-		std::string output;
-		char str[1000];
-		strcpy(str, inpstr.c_str());
-		char buf[1000];
-		int a;
-		for (int i = 0; i < (int)inpstr.length(); i++) {
-			a = 0;
-			if ('0' <= str[i] && '9' >= str[i]) {
-				a += 16 * (str[i] - '0');
-			}
-			else if ('a' <= str[i] && 'f' >= str[i]) {
-				a += 16 * (str[i] - 'a' + 10);
-			}
-			else {
-				output = "ERROR!";
-				return "";
-			}
-			i++;
-			if ('0' <= str[i] && '9' >= str[i]) {
-				a += str[i] - '0';
-			}
-			else if ('a' <= str[i] && 'f' >= str[i]) {
-				a += str[i] - 'a' + 10;
-			}
-			else {
-				output = "ERROR!";
-				return "";
-			}
-			buf[(i - 1) / 2] = a;
-			buf[(i - 1) / 2 + 1] = '\0';
-		}
-		buf[999] = '\0';
-		output = buf;
-		return output;
-	}
-
-	int sendDM(std::string UserID, std::string Content) {
+	int QasinoBot::sendDM(std::string UserID, std::string Content) {
 		Channel C = createDirectMessageChannel(UserID);
 		sendMessage(C, Content);
 		return 0;
 	}
 
-	std::string ReplaceAll(std::string& str, const std::string& from, const std::string& to) {
-		size_t start_pos = 0;
-		while ((start_pos = str.find(from, start_pos)) != std::string::npos)
-		{
-			str.replace(start_pos, from.length(), to);
-			start_pos += to.length();
-		}
-		return str;
-	}
-
-	std::string ToText(std::string inp) {
-		ReplaceAll(inp, std::string("`"), std::string("'"));
-		inp = "`" + inp + "`";
-		return inp;
-	}
-
-	qasino::qambler readQamblerInfo(std::string ID) {
+	qasino::qambler QasinoBot::readQamblerInfo(std::string ID) {
 		std::ifstream readFile;
 #ifdef _WIN32
 		readFile.open("database\\qamblers\\" + ID + ".txt");
@@ -393,8 +576,8 @@ public:
 			int i = 1;
 			while (readFile) {
 				getline(readFile, str);
-				ReplaceAll(str, "\r", "");
-				ReplaceAll(str, "\n", "");
+				replaceAll(str, "\r", "");
+				replaceAll(str, "\n", "");
 				if (str == div_ch) {
 					i++;
 					if (i >= 100) {
@@ -426,7 +609,7 @@ public:
 		return Qb;
 	}
 
-	bool writeQamblerInfo(qasino::qambler Qb) {
+	bool QasinoBot::writeQamblerInfo(qasino::qambler Qb) {
 		printf("writeQamblerInfo [%s]", hexprint(Qb.ID).c_str());
 		std::ofstream ofile;
 #ifdef _WIN32
@@ -444,7 +627,7 @@ public:
 		return true;
 	}
 
-	void readStock(qasino::stock& S) {
+	void QasinoBot::readStock(qasino::stock& S) {
 		std::ifstream readFile;
 #ifdef _WIN32
 		readFile.open("database\\stocks\\" + S.name + ".txt");
@@ -458,8 +641,8 @@ public:
 			int i = 0;
 			while (readFile) {
 				getline(readFile, str);
-				ReplaceAll(str, "\r", "");
-				ReplaceAll(str, "\n", "");
+				replaceAll(str, "\r", "");
+				replaceAll(str, "\n", "");
 				std::stringstream SS(str);
 				int a;
 				SS >> a;
@@ -475,7 +658,7 @@ public:
 		}
 	}
 
-	void writeStock(qasino::stock S) {
+	void QasinoBot::writeStock(qasino::stock S) {
 		std::ofstream ofile;
 #ifdef _WIN32
 		ofile.open("database\\stocks\\" + S.name + ".txt");
@@ -494,7 +677,7 @@ public:
 	}
 
 
-	Embed QamblerProfile(qasino::qambler Qb) {
+	Embed QasinoBot::qamblerProfile(qasino::qambler Qb) {
 		Embed E;
 		EmbedField EF;
 		E.title = GetTextA("profile-title", Qb.nick.c_str());
@@ -504,6 +687,12 @@ public:
 		E.fields.push_back(EF);
 		EF.name = GetTextA("profile-money");
 		EF.value = Qb.info[qasino::SYS_MONEY];
+		EF.value += "Q$";
+		EF.isInline = true;
+		E.fields.push_back(EF);
+		EF.name = GetTextA("profile-chip");
+		EF.value = Qb.info[qasino::SYS_GAME_CHIP];
+		EF.value += GetTextA("profile-chip-count");
 		EF.isInline = true;
 		E.fields.push_back(EF);
 		EF.name = GetTextA("profile-stock");
@@ -530,7 +719,7 @@ public:
 	
 	}
 
-	std::vector<std::string> split(std::string input, char delimiter) {
+	std::vector<std::string> QasinoBot::split(std::string input, char delimiter) {
 		std::vector<std::string> answer;
 		std::stringstream ss(input);
 		std::string temp;
@@ -542,7 +731,7 @@ public:
 		return answer;
 	}
 
-	void UpdStk() {
+	void QasinoBot::UpdStk() {
 		for (int i = 0; i < stocks.size(); i++) {
 			if (i != 1) {
 				readStock(stocks[i]);
@@ -559,11 +748,9 @@ public:
 
 		schedule([this]() {this->UpdStk(); }, 60000);
 	}
-
-
 	
-	void UpdNick(std::string ID, std::string nick, bool IsBeggar = false) {
-		qasino::qambler Qb = readQamblerInfo(ID);
+	void QasinoBot::UpdNick(std::string ID, std::string nick, bool IsBeggar = false) {
+		qasino::qambler Qb = client->readQamblerInfo(ID);
 		Qb.nick = nick;
 		writeQamblerInfo(Qb);
 		if (IsBeggar) {
@@ -576,7 +763,7 @@ public:
 		}
 	}
 
-	void DiceEdit(std::string MessageID, std::string ChannelID, Embed E, int result) {
+	void QasinoBot::DiceEdit(std::string MessageID, std::string ChannelID, Embed E, int result) {
 		EditMessageParams Ep;
 		Ep.content = "_ _";
 		Ep.channelID = ChannelID;
@@ -603,7 +790,7 @@ public:
 		editMessage(Ep);
 	}
 
-	int RollDice(std::string ChannelID, bool iseasteregg = false, float time = 1, std::string name = "~~~") {
+	int QasinoBot::RollDice(std::string ChannelID, bool iseasteregg = false, float time = 1, std::string name = "~~~") {
 		if (name == "~~~") {
 			name = GetTextL("dice-title");
 		}
@@ -631,13 +818,13 @@ public:
 		return result;
 	}
 
-	long long CurrentTime() {
+	long long QasinoBot::CurrentTime() {
 		time_t now = time(0);
 		long long t = now;
 		return t;
 	}
 
-	void onReady(Ready readyData) override {
+	void QasinoBot::onReady(Ready readyData)  {
 		std::array<AppCommand::Option, 1> option;
 		std::array<AppCommand::Option, 2> option2;
 		std::array<AppCommand::Option, 3> option3;
@@ -726,6 +913,60 @@ public:
 
 		createGlobalAppCommand(QasinoAppID, "dice", GetTextA("dice"));*/
 
+		option2.at(0).type = AppCommand::Option::Type::STRING;
+		option2.at(0).name = "game";
+		option2.at(0).description = GetTextA("solo-game-game");
+		option2.at(0).isRequired = true;
+
+		choice.value = "dice-bet";
+		choice.name = GetTextL("solo-dice-bet");
+		option2.at(0).choices.push_back(std::move(choice));
+
+		/*---*/
+
+		option2.at(1).type = AppCommand::Option::Type::INTEGER;
+		option2.at(1).name = "betting";
+		option2.at(1).description = GetTextA("solo-game-betting");
+		option2.at(1).isRequired = true;
+
+		//createGlobalAppCommand(QasinoAppID, "solo-game", GetTextA("solo-game"), option2);
+
+		/*option2.at(0).type = AppCommand::Option::Type::USER;
+		option2.at(0).name = "qambler";
+		option2.at(0).description = GetTextA("send-qambler");
+		option2.at(0).isRequired = true;
+		option2.at(0).choices.clear();
+
+		option2.at(1).type = AppCommand::Option::Type::INTEGER;
+		option2.at(1).name == "money";
+		option2.at(1).description = GetTextA("send-money");
+		option2.at(1).isRequired = true;
+		option2.at(1).choices.clear();
+
+		createGlobalAppCommand(QasinoAppID, "send", GetTextA("send"), option2);*/
+
+		/*0option2.at(0).type = AppCommand::Option::Type::STRING;
+		option2.at(0).name = "action";
+		option2.at(0).description = GetTextA("chip-action");
+		option2.at(0).isRequired = true;
+
+		option2.at(0).choices.clear();
+		choice.value = "buy";
+		choice.name = GetTextL("chip-buy");
+		option2.at(0).choices.push_back(std::move(choice));
+		choice.value = "sell";
+		choice.name = GetTextL("chip-sell");
+		option2.at(0).choices.push_back(std::move(choice));
+
+		option2.at(1).type = AppCommand::Option::Type::INTEGER;
+		option2.at(1).name = "count";
+		option2.at(1).description = GetTextA("chip-count");
+		option2.at(1).isRequired = true;
+
+		createGlobalAppCommand(QasinoAppID, "chip", GetTextA("chip"), option2);*/
+
+
+
 		stocks.push_back(qasino::CreateStock("Stock", 100, 20, 1, 3000));
 		stocks.push_back(qasino::CreateStock("Inverse", 100, 20, 1, 3000));
 		stocks.push_back(qasino::CreateStock("Triple", 900, 60, 0, 9000));
@@ -734,7 +975,7 @@ public:
 		UpdStk();
 	}
 
-	void onMessage(SleepyDiscord::Message message) override {
+	void QasinoBot::onMessage(SleepyDiscord::Message message)  {
 		if (message.author.ID.string() == Q_ID) {
 			std::vector<std::string> input;
 			input = split(message.content, ' ');
@@ -749,7 +990,7 @@ public:
 					std::stringstream SS(input[2]);
 					int i;
 					SS >> i;
-					qasino::qambler Qb = readQamblerInfo(nickID);
+					qasino::qambler Qb = client->readQamblerInfo(nickID);
 					Qb.SetInt(qasino::SYS_MONEY, i);
 					writeQamblerInfo(Qb);
 				}
@@ -766,13 +1007,15 @@ public:
 		}
 	}
 
-	void onInteraction(Interaction interaction) override {
+	void QasinoBot::onInteraction(Interaction interaction)  {
 		std::srand(static_cast<int>(std::time(0)));
 		SleepyDiscord::Interaction::Response response;
 		SleepyDiscord::WebHookParams followUp;
 		std::string customid = interaction.data.customID;
 
-		Channel GC = getChannel(interaction.channelID);
+		std::vector<std::string> SplitID = split(customid, '-');
+
+		Channel GC = client->getChannel(interaction.channelID);
 		if (GC.type == Channel::DM) {
 			response.data.content = GetTextA("DM_X");
 			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
@@ -792,9 +1035,29 @@ public:
 		}
 
 		if (interaction.type == Interaction::Type::MessageComponent) {
-
+			if (SplitID[0] == "solo") {
+				SoloGame* soloGame;
+				for (std::vector<SoloGame*>::iterator it = _sologames.begin(); it != _sologames.end(); it++) {
+					soloGame = *it;
+					if (soloGame->GetID() == SplitID[1]) {
+						break;
+					}
+				}
+				if (soloGame->GetPlayer().ID == interaction.member.ID.string()) {
+					soloGame->Process(std::move(interaction));
+				}
+			}
 		}
-		else if (interaction.data.name == "help") {
+		else {
+			if (iQB.GetInt(qasino::SYS_IS_PLAYING)) {
+				response.data.content = GetTextA("PL_X");
+				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+				response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
+				createInteractionResponse(interaction, interaction.token, response);
+				return;
+			}
+		}
+		if (interaction.data.name == "help") {
 			response.data.content = GetTextA("botcommand");
 			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 			response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
@@ -808,9 +1071,8 @@ public:
 			else {
 				UID = interaction.data.options.at(0).value.GetString();
 			}
-			qasino::qambler Qb = readQamblerInfo(UID);
-			response.data.content = "_ _";
-			response.data.embeds.push_back(QamblerProfile(Qb));
+			qasino::qambler Qb = client->readQamblerInfo(UID);
+			response.data.embeds.push_back(qamblerProfile(Qb));
 			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 			createInteractionResponse(interaction, interaction.token, response);
 		}
@@ -824,7 +1086,7 @@ public:
 					break;
 				}
 			}
-			qasino::qambler Qb = readQamblerInfo(interaction.member.ID);
+			qasino::qambler Qb = client->readQamblerInfo(interaction.member.ID);
 			if (todo == "buy") {
 				int count = interaction.data.options.at(2).value.GetInt();
 				if (Qb.GetInt(qasino::SYS_MONEY) + (-1 * count * stocks.at(stn).value[99]) < 0 || count <= 0) {
@@ -895,7 +1157,7 @@ public:
 		}
 		else if (interaction.data.name == "nick") {
 			std::string nick = interaction.data.options.at(0).value.GetString();
-			qasino::qambler Qb = readQamblerInfo(interaction.member.ID);
+			qasino::qambler Qb = client->readQamblerInfo(interaction.member.ID);
 			if (Qb.GetInt(qasino::SYS_MONEY) >= 100000) {
 				UpdNick(std::move(interaction.data.ID), nick);
 				response.data.content = GetTextA("nick-success", nick.c_str());
@@ -932,7 +1194,7 @@ public:
 			}
 		}
 		else if (interaction.data.name == "beg") {
-			qasino::qambler Qb = readQamblerInfo(interaction.member.ID);
+			qasino::qambler Qb = client->readQamblerInfo(interaction.member.ID);
 			int money = interaction.data.options.at(0).value.GetInt();
 			long long t = CurrentTime();
 			Qb.info[qasino::ECO_BEGGAR] = std::to_string(t);
@@ -970,25 +1232,102 @@ public:
 			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 			response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
 			createInteractionResponse(interaction, interaction.token, response);
-			qasino::qambler Qb = readQamblerInfo(interaction.member.ID);
+			qasino::qambler Qb = client->readQamblerInfo(interaction.member.ID);
 			std::string title = GetTextA("dice-title-w-nick", Qb.nick.c_str());
 			RollDice(interaction.channelID, false, 3, title); 
 		}
-		else {
+		else if (interaction.data.name == "solo-game") {
+			std::string gametype = interaction.data.options.at(0).value.GetString();
+			if (gametype == "dice-bet") {
+				DiceBet* dicebet = new DiceBet(interaction.ID);
+				_sologames.push_back(dicebet);
+				printf("%s", interaction.ID.string().c_str());
+			}
+			SoloGame* soloGame;
+			for (std::vector<SoloGame*>::iterator it = _sologames.begin(); it != _sologames.end(); it++) {
+				soloGame = *it;
+				if (soloGame->GetID() == interaction.ID.string()) {
+					break;
+				}
+			}
+			if (soloGame->OnStart(std::move(interaction))) {
+				soloGame->Process(std::move(interaction), true);
+			}
+		}
+		else if (interaction.data.name == "send") {
+			qasino::qambler from = readQamblerInfo(interaction.member.ID);
+			qasino::qambler to = readQamblerInfo(interaction.data.options.at(0).value.GetString());
+			int money = interaction.data.options.at(1).value.GetInt();
 
+			if (from.GetInt(qasino::SYS_MONEY) < money || money <= 0) {
+				response.data.content = GetTextA("send-fail");
+				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+				response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
+				createInteractionResponse(interaction, interaction.token, response);
+				return;
+			}
+
+			response.data.content = GetTextA("send-success", from.ID.c_str(), to.ID.c_str(), std::to_string(money).c_str());
+			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+			createInteractionResponse(interaction, interaction.token, response);
+
+			from.ChangeInt(qasino::SYS_MONEY, -1 * money);
+			to.ChangeInt(qasino::SYS_MONEY, money);
+			writeQamblerInfo(from);
+			writeQamblerInfo(to);
+		}
+		else if (interaction.data.name == "chip") {
+			std::string action = interaction.data.options.at(0).value.GetString();
+			int count = interaction.data.options.at(1).value.GetInt();
+			qasino::qambler Qb = readQamblerInfo(interaction.member.ID);
+
+			if (action == "buy") {
+				if (Qb.GetInt(qasino::SYS_MONEY) > count * 1000) {
+					Qb.ChangeInt(qasino::SYS_MONEY, -1 * count * 1000);
+					Qb.ChangeInt(qasino::SYS_GAME_CHIP, count);
+					writeQamblerInfo(Qb);
+					response.data.content = GetTextA("chip-buy-msg", std::to_string(count).c_str());
+					response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+					response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
+					createInteractionResponse(interaction, interaction.token, response);
+					return;
+				}
+				response.data.content = GetTextA("chip-buy-fail");
+				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+				response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
+				createInteractionResponse(interaction, interaction.token, response);
+			}
+			else {
+				if (Qb.GetInt(qasino::SYS_GAME_CHIP) >= count) {
+					Qb.ChangeInt(qasino::SYS_MONEY, count * 950);
+					Qb.ChangeInt(qasino::SYS_GAME_CHIP, -1 * count);
+					writeQamblerInfo(Qb);
+					response.data.content = GetTextA("chip-sell-msg", std::to_string(count).c_str());
+					response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+					response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
+					createInteractionResponse(interaction, interaction.token, response);
+					return;
+				}
+				response.data.content = GetTextA("chip-sell-fail");
+				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+				response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
+				createInteractionResponse(interaction, interaction.token, response);
+			}
+		}
+		else {
+			
 		}
 	}
-};
 
 
 int main()
 {
 	printf("QasinoBot execute\n");
 	textManager.Initialize("qasino.txt");
-
-	QasinoBot qasinoClient(QasinoToken, SleepyDiscord::Mode::USER_CONTROLED_THREADS);
-	qasinoClient.setIntents(Intent::SERVER_MESSAGES, Intent::DIRECT_MESSAGES, Intent::SERVER_MESSAGE_REACTIONS);
-	qasinoClient.run();
+	client = new QasinoBot(QasinoToken, SleepyDiscord::Mode::USER_CONTROLED_THREADS);
+	client->Clear();
+	client->setIntents(Intent::SERVER_MESSAGES, Intent::DIRECT_MESSAGES, Intent::SERVER_MESSAGE_REACTIONS);
+	client->run();
 }
 
 // QasinoBot server script
