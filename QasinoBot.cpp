@@ -105,7 +105,7 @@ bool SoloGame::OnStart(Interaction interaction) {
 	response.data.content = GetTextA("solo-game-start", _displayname.c_str(), std::to_string(_betting).c_str());
 	response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 	client->createInteractionResponse(interaction, interaction.token, response);
-	_player.SetInt(qasino::SYS_GAME_CHIP, -1 * _betting);
+	_player.ChangeInt(qasino::SYS_GAME_CHIP, -1 * _betting);
 	client->writeQamblerInfo(_player);
 
 	return true;
