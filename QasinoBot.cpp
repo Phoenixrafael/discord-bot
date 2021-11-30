@@ -76,7 +76,7 @@ bool SoloGame::OnStart(Interaction interaction) {
 	_channel = client->getChannel(interaction.channelID);
 	_player = client->readQamblerInfo(interaction.member.ID);
 	_playing = true;
-	_player.ChangeInt(qasino::SYS_IS_PLAYING, 1);
+	_player.SetInt(qasino::SYS_IS_PLAYING, 1);
 	_gameID = interaction.ID;
 	_player.info[qasino::SYS_GAMEID] = _gameID;
 	_betting = interaction.data.options.at(1).value.GetInt();
@@ -119,6 +119,7 @@ bool SoloGame::Clear() {
 	_playing = false;
 	_player.SetInt(qasino::SYS_IS_PLAYING, 0);
 	_player.info[qasino::SYS_GAMEID] = "-1";
+	client->writeQamblerInfo(_player);
 	_gameID = -1;
 	return false;
 }
@@ -173,7 +174,8 @@ bool DiceBet::Process(Interaction interaction, bool start = false) {
 		}
 		if (SplitID[2] == "go") {
 			_count++;
-			int result = client->RollDice(interaction.channelID, false, 0.5, GetTextA("dice-bet-dicelabel", std::to_string(_count).c_str()));
+			std::string tn = GetTextA(("dice-bet-" + _bet).c_str());
+			int result = client->RollDice(interaction.channelID, false, 0.5, GetTextA("dice-bet-dicelabel", std::to_string(_count).c_str(), tn.c_str()));
 			if (_bet[result - 1] == '1') {
 				_table = _table + (_bet[7] - '1' + 1) * _table / 10 * _count;
 				SleepyDiscord::Interaction::Response response;
