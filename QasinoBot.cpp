@@ -1298,7 +1298,7 @@ const char* TextManager::GetText(const char* key, ...)
 			qasino::qambler Qb = readQamblerInfo(interaction.member.ID);
 
 			if (action == "buy") {
-				if (Qb.GetInt(qasino::SYS_MONEY) > count * 1000) {
+				if (Qb.GetInt(qasino::SYS_MONEY) >= count * 1000) {
 					Qb.ChangeInt(qasino::SYS_MONEY, -1 * count * 1000);
 					Qb.ChangeInt(qasino::SYS_GAME_CHIP, count);
 					writeQamblerInfo(Qb);
