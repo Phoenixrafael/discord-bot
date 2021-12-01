@@ -158,6 +158,10 @@ bool DiceBet::Process(Interaction interaction, bool start = false) {
 		selectOptions.label = client->GetTextL("dice-bet-notonenorsix");
 		selectOptions.description = client->GetTextL("dice-bet-notonenorsix-des");
 		selectmenus->options.push_back(selectOptions);
+		selectOptions.value = "111110.1";
+		selectOptions.label = client->GetTextL("dice-bet-imperfect");
+		selectOptions.description = client->GetTextL("dice-bet-imperfect-des");
+		selectmenus->options.push_back(selectOptions);
 		selectmenus->customID = "solo-" + GetID() + "-start";
 
 		auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
@@ -177,7 +181,7 @@ bool DiceBet::Process(Interaction interaction, bool start = false) {
 			std::string tn = GetTextA(("dice-bet-" + _bet).c_str());
 			int result = client->RollDice(interaction.channelID, false, 0.5, GetTextA("dice-bet-dicelabel", std::to_string(_count).c_str(), tn.c_str()));
 			if (_bet[result - 1] == '1') {
-				_table = _table + (_bet[7] - '1' + 1) * _table / 10 * _count;
+				_table = _table + (_bet[7] - '1' + 1) * _table / 10 * _count + ((((_bet[7] - '1' + 1) * _table * 2 - 1) / 20 * _count==0)?1:0);
 				SleepyDiscord::Interaction::Response response;
 				response.data.embeds.push_back(Success(result));
 
@@ -233,7 +237,7 @@ Embed DiceBet::Success(int result) {
 	E.description = client->GetTextL("dice-bet-success-description");
 	EmbedField EF;
 	EF.name = client->GetTextL("dice-bet-success-ifgo");
-	EF.value = std::to_string(_table + (_bet[7] - '1' + 1) * _table / 10 * (_count+1));
+	EF.value = std::to_string(_table + (_bet[7] - '1' + 1) * _table / 10 * (_count + 1) + ((((_bet[7] - '1' + 1) * _table * 2 - 1) / 20 * _count == 0) ? 1 : 0));
 	E.fields.push_back(EF);
 	EF.name = client->GetTextL("dice-bet-success-ifstop");
 	EF.value = std::to_string(_table);
