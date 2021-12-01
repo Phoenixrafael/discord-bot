@@ -1030,7 +1030,7 @@ const char* TextManager::GetText(const char* key, ...)
 		}
 		qasino::qambler iQB = readQamblerInfo(interaction.member.ID);
 		if (CurrentTime() - iQB.GetLLong(qasino::ECO_BEGGAR) <= 7200) {
-			response.data.content = GetTextA("beggar-response", iQB.nick.substr(0, 6).c_str(), std::to_string(iQB.GetLLong(qasino::ECO_BEGGAR)).c_str());
+			response.data.content = GetTextA("beggar-response", iQB.nick.substr(0, 6).c_str(), std::to_string(iQB.GetLLong(qasino::ECO_BEGGAR)).c_str(), iQB.nick.c_str());
 			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 			createInteractionResponse(interaction, interaction.token, response);
 			return;
