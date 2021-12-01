@@ -968,6 +968,9 @@ const char* TextManager::GetText(const char* key, ...)
 		createGlobalAppCommand(QasinoAppID, "chip", GetTextA("chip"), option2);*/
 
 
+		createGlobalAppCommand(QasinoAppID, "uptime", GetTextA("uptime"));
+
+
 
 		stocks.push_back(qasino::CreateStock("Stock", 100, 20, 1, 3000));
 		stocks.push_back(qasino::CreateStock("Inverse", 100, 20, 1, 3000));
@@ -1061,6 +1064,12 @@ const char* TextManager::GetText(const char* key, ...)
 		}
 		if (interaction.data.name == "help") {
 			response.data.content = GetTextA("botcommand");
+			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+			response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
+			createInteractionResponse(interaction, interaction.token, response);
+		}
+		else if (interaction.data.name == "uptime") {
+			response.data.content = GetTextA("uptime-content", std::to_string(_uptime).c_str());
 			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 			response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
 			createInteractionResponse(interaction, interaction.token, response);
