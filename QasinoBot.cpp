@@ -1233,6 +1233,7 @@ const char* TextManager::GetText(const char* key, ...)
 					createInteractionResponse(interaction, interaction.token, response);
 					UpdNick(std::move(interaction.member.ID), GetTextL("beg-beggar") + " " + Qb.nick);
 					Qb.ChangeInt(qasino::SYS_MONEY, money);
+					writeQamblerInfo(Qb);
 				}
 			}
 			std::string iID = interaction.member.ID;
