@@ -965,10 +965,10 @@ const char* TextManager::GetText(const char* key, ...)
 		option2.at(1).description = GetTextA("chip-count");
 		option2.at(1).isRequired = true;
 
-		createGlobalAppCommand(QasinoAppID, "chip", GetTextA("chip"), option2);*/
+		createGlobalAppCommand(QasinoAppID, "chip", GetTextA("chip"), option2);
 
 
-		createGlobalAppCommand(QasinoAppID, "uptime", GetTextA("uptime"));
+		createGlobalAppCommand(QasinoAppID, "uptime", GetTextA("uptime")); */
 
 
 
