@@ -1002,6 +1002,7 @@ void QasinoBot::onReady(Ready readyData) {
 }
 
 void QasinoBot::onMessage(SleepyDiscord::Message message) {
+	saveMessage(message);
 	if (message.author.ID.string() == Q_ID) {
 		std::vector<std::string> input;
 		input = split(message.content, ' ');

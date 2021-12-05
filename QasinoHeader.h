@@ -225,9 +225,9 @@ namespace qasino {
 		return C;
 	}
 
-	std::vector<card> randdeck() {
+	/*std::vector<card> randdeck() {
 
-	}
+	}*/
 }
 
 class QasinoBot;
