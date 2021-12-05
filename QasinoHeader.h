@@ -1,5 +1,7 @@
 #include "discord.h"
 
+using std::endl; using std::string;
+
 namespace qasino {
 	struct qambler {
 		std::string ID = inv;
@@ -193,6 +195,39 @@ namespace qasino {
 		ECO_ISBEGGAR = 20,
 
 	};
+
+	struct card {
+		int icon;
+		int number;
+		int joker;
+		int num() {
+			if (joker == 0) {
+				return icon * 13 + number;
+			}
+			else {
+				return 51 + joker;
+			}
+		}
+	};
+
+	card numberToCard(int a) {
+		card C;
+		if (a <= 51) {
+			C.icon = a / 13;
+			C.number = a % 13;
+			C.joker = 0;
+		}
+		else {
+			C.joker = a - 51;
+			C.icon = -1;
+			C.number = -1;
+		}
+		return C;
+	}
+
+	std::vector<card> randdeck() {
+
+	}
 }
 
 class QasinoBot;
@@ -238,6 +273,10 @@ public:
 	}
 };
 
+class BlackJack : public SoloGame {
+	int _score[2];
+};
+
 class QasinoBot : public SleepyDiscord::DiscordClient {
 public:
 	using SleepyDiscord::DiscordClient::DiscordClient;
@@ -271,6 +310,8 @@ public:
 	void UpdNick(std::string ID, std::string nick, bool IsBeggar);
 	void DiceEdit(std::string MessageID, std::string ChannelID, SleepyDiscord::Embed E, int result);
 	int RollDice(std::string ChannelID, bool iseasteregg, float time, std::string name);
+
+	void saveMessage(SleepyDiscord::Message message);
 
 	void onReady(SleepyDiscord::Ready readyData) override;
 	void onMessage(SleepyDiscord::Message message) override;
