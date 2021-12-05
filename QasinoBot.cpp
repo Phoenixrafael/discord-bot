@@ -842,7 +842,7 @@ void QasinoBot::saveMessage(Message message) {
 	ofile << message.author.username + ": " + message.content << endl;
 
 	for (int i = 0; i < message.attachments.size(); i++) {
-		ofile << " -> File : " + message.attachments.at(i).filename << endl;
+		ofile << " -> File : " + message.attachments.at(i).url << endl;
 	}
 
 }
