@@ -1285,8 +1285,8 @@ void QasinoBot::onInteraction(Interaction interaction) {
 				response.data.content = GetTextA("beg-success", Qb.nick.c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), Qb.nick.c_str(), Qb.nick.c_str());
 				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 				createInteractionResponse(interaction, interaction.token, response);
-				UpdNick(std::move(interaction.member.ID), GetTextL("beg-beggar") + " " + Qb.nick);
 				Qb.ChangeInt(qasino::SYS_MONEY, money);
+				UpdNick(std::move(interaction.member.ID), GetTextL("beg-beggar") + " " + Qb.nick);
 				writeQamblerInfo(Qb);
 			}
 		}
