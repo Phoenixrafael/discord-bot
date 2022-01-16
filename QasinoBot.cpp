@@ -2,6 +2,7 @@
 TextManager textManager(10);
 QasinoBot* client;
 using namespace SleepyDiscord;
+using namespace qasino;
 
 std::string hexprint(std::string str)
 {
@@ -111,6 +112,42 @@ bool SoloGame::OnStart(Interaction interaction) {
 	return true;
 }
 
+bool SoloGame::EndGame(int result, int money) {
+	SendMessageParams Sp;
+	Sp.content = GetTextA("solo-game-result", _displayname);
+	Sp.channelID = _channel;
+	Embed E;
+	E.title = client->GetTextL("solo-game-result-title", _displayname);
+	EmbedField BetMoney;
+	EmbedField GetMoney;
+	EmbedField Total;
+	BetMoney.name = client->GetTextL("solo-game-result-bet");
+	GetMoney.name = client->GetTextL("solo-game-result-get");
+	Total.name = client->GetTextL("solo-game-result-tot");
+	BetMoney.value = std::to_string(_betting);
+	if (result == true) {
+		_player.ChangeInt(qasino::SYS_MONEY, money);
+		E.title = client->GetTextL("solo-game-result-win");
+		GetMoney.value = std::to_string(money);
+		Total.value = std::to_string(money - _betting);
+	}
+	else if (result == false) {
+		E.title = client->GetTextL("solo-game-result-lose");
+		GetMoney.value = std::to_string(0);
+		Total.value = std::to_string(0 - _betting);
+	}
+	else {
+		E.title = client->GetTextL("solo-game-result-tie");
+		GetMoney.value = std::to_string(_betting);
+		Total.value = std::to_string(0);
+	}
+	E.fields.push_back(BetMoney);
+	E.fields.push_back(GetMoney);
+	E.fields.push_back(Total);
+	Clear();
+	return true;
+}
+
 bool SoloGame::Process(Interaction interaction, bool start = false) {
 	return true;
 }
@@ -217,14 +254,13 @@ bool DiceBet::Process(Interaction interaction, bool start = false) {
 			}
 		}
 		else {
-			_player.ChangeInt(qasino::SYS_GAME_CHIP, _table);
-			client->writeQamblerInfo(_player);
 			SleepyDiscord::Interaction::Response response;
 			response.data.embeds.push_back(Stop());
 			response.data.content = "_ _";
 			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 			client->createInteractionResponse(interaction, interaction.token, response);
-			Clear();
+
+			EndGame(false, _table);
 		}
 	}
 	return true;
@@ -567,38 +603,28 @@ int QasinoBot::sendDM(std::string UserID, std::string Content) {
 }
 
 qasino::qambler QasinoBot::readQamblerInfo(std::string ID) {
+	Json::Value Qj;
 	std::ifstream readFile;
 #ifdef _WIN32
-	readFile.open("database\\qamblers\\" + ID + ".txt");
+	readFile.open("database\\qamblers\\" + ID + ".json");
 #endif
 #ifdef linux
 	printf("linux is detected!\n");
-	readFile.open("/home/phoenix/discord-bot/build/database/qamblers/" + ID + ".txt");
+	readFile.open("/home/phoenix/discord-bot/build/database/qamblers/" + ID + ".json");
 #endif
 	qasino::qambler Qb;
 	Qb.ID = ID;
-	if (readFile.is_open()) {
-		std::string str;
-		int i = 1;
-		while (readFile) {
-			getline(readFile, str);
-			replaceAll(str, "\r", "");
-			replaceAll(str, "\n", "");
-			if (str == div_ch) {
-				i++;
-				if (i >= 100) {
-					break;
-				}
-			}
-			else {
-				if (i == 1) {
-					Qb.nick = str;
-				}
-				else {
-					Qb.info[i - 2] = str;
-				}
-			}
+
+	Json::CharReaderBuilder builder;
+	builder["collectComments"] = false;
+	JSONCPP_STRING errs;
+	bool ok = parseFromStream(builder, readFile, &Qj, &errs);
+
+	if (readFile.is_open() && ok) {
+		for (int i = 0; i < 100; i++) {
+			Qb.info[i] = Qj["info"][i].asString();
 		}
+		Qb.nick = hexdeprint(Qj["nick"].asString());
 	}
 	else {
 		Qb.nick = "";
@@ -619,17 +645,23 @@ bool QasinoBot::writeQamblerInfo(qasino::qambler Qb) {
 	printf("writeQamblerInfo [%s]", hexprint(Qb.ID).c_str());
 	std::ofstream ofile;
 #ifdef _WIN32
-	ofile.open("database\\qamblers\\" + Qb.ID + ".txt");
+	ofile.open("database\\qamblers\\" + Qb.ID + ".json");
 #endif
 #ifdef linux
-	ofile.open("/home/phoenix/discord-bot/build/database/qamblers/" + Qb.ID + ".txt");
+	ofile.open("/home/phoenix/discord-bot/build/database/qamblers/" + Qb.ID + ".json");
 #endif
-	std::string out;
-	out = Qb.nick + "\n" + div_ch + "\n";
+	Json::Value Qj;
 	for (int i = 0; i < 100; i++) {
-		out += Qb.info[i] + "\n" + div_ch + "\n";
+		Qj["info"][i] = Qb.info[i];
 	}
-	ofile << out;
+	Qj["nick"] = hexprint(Qb.nick);
+	Json::StreamWriterBuilder builder; 
+	builder["commentStyle"] = "None"; 
+	builder["indentation"] = " "; // Tab 
+	std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
+	writer->write(Qj, &ofile);
+	writer->write(Qj, &std::cout);
+
 	return true;
 }
 

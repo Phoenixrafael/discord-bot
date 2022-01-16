@@ -205,8 +205,72 @@ namespace qasino {
 				return icon * 13 + number;
 			}
 			else {
-				return 51 + joker;
+				return 52 + joker;
 			}
+		}
+		std::string emoji() {
+			std::vector<std::string> FirstRed;
+			std::vector<std::string> FirstBlack;
+			std::vector<std::string> Second;
+
+			std::string ret;
+
+			Second.push_back("<:card_spade:917005102290702376>");
+			Second.push_back("<:card_heart:917005102966005770>");
+			Second.push_back("<:card_club:917005102823399434>");
+			Second.push_back("<:card_diamond:917005101883850805>");
+
+			FirstRed.push_back("<:card_red_1:917005102051651604>");
+			FirstRed.push_back("<:card_red_2:917005102106169344>");
+			FirstRed.push_back("<:card_red_3:917005102064218112>");
+			FirstRed.push_back("<:card_red_4:917005102060032070>");
+			FirstRed.push_back("<:card_red_5:917005102072610816>");
+			FirstRed.push_back("<:card_red_6:917005101976141855>");
+			FirstRed.push_back("<:card_red_7:917005102232002600>");
+			FirstRed.push_back("<:card_red_8:917005102148120626>");
+			FirstRed.push_back("<:card_red_9:917005101950967840>");
+			FirstRed.push_back("<:card_red_10:917005102127153182>");
+			FirstRed.push_back("<:card_red_J:917005102122946570>");
+			FirstRed.push_back("<:card_red_Q:917005101762215997>");
+			FirstRed.push_back("<:card_red_K:917005102265536552>");
+
+			FirstBlack.push_back("<:card_black_1:917005102563332096>");
+			FirstBlack.push_back("<:card_black_2:917005101737050172>");
+			FirstBlack.push_back("<:card_black_3:917005102013874176>");
+			FirstBlack.push_back("<:card_black_4:917005101774823505>");
+			FirstBlack.push_back("<:card_black_5:917005101984538624>");
+			FirstBlack.push_back("<:card_black_6:917005101934182450>");
+			FirstBlack.push_back("<:card_black_7:917005101611237407>");
+			FirstBlack.push_back("<:card_black_8:917005101623816303>");
+			FirstBlack.push_back("<:card_black_9:917005101988708372>");
+			FirstBlack.push_back("<:card_black_10:917005102164873216>");
+			FirstBlack.push_back("<:card_black_J:917005101904855090>");
+			FirstBlack.push_back("<:card_black_Q:917005102269751326>");
+			FirstBlack.push_back("<:card_black_K:917005101799997461>");
+
+			if (number != -1) {
+				if (icon == 0 || icon == 2) {
+					ret = FirstBlack[number];
+				}
+				else {
+					ret = FirstRed[number];
+				}
+			}
+			else {
+				ret = joker == 0 ?
+					"<:card_black_joker1:918462066602418176>" :
+					"<:card_red_joker1:918462066749222973>";
+			}
+
+			if (number != -1) {
+				ret += Second[icon];
+			}
+			else {
+				ret += joker == 0 ?
+					"<:card_black_joker2:918462066925371392>" :
+					"<:card_red_joker2:918462067843952680>";
+			}
+			return ret;
 		}
 	};
 
@@ -225,10 +289,85 @@ namespace qasino {
 		return C;
 	}
 
-	/*std::vector<card> randdeck() {
+	card customNumberToCard(int a, std::vector<int> manual) {
+		int b = 0;
+		for (int i = 0; i < a; i++) {
+			if (manual[b] <= 0) {
+				b++;
+			}
+			manual[b]--;
+		}
+		return numberToCard(b);
+	}
 
-	}*/
+	void ShuffleDeck(std::vector<card>& D) {
+		std::vector<card> R;
+		int size = D.size();
+		for (int i = 0; i < size; i++) {
+			std::random_device rd;
+			std::mt19937 gen(rd());
+			std::uniform_int_distribution<int> dis(0, size - 1 - i);
+			int r = dis(rd);
+			R.push_back(D[r]);
+			std::vector<card>::iterator it = D.begin();
+			D.erase(it + r);
+		}
+		D = R;
+	}
+
+	std::vector<card> ClassicDeck(bool shuffled = false, bool joker = true) {
+		std::vector<card> R;
+		for (int i = 0; i < 54 - (1 - joker) * 2; i++) {
+			R.push_back(numberToCard(i));
+		}
+		if (shuffled) {
+			ShuffleDeck(R);
+		}
+		return R;
+	}
+
+	card cardPick(std::vector<card>& D) {
+		if(D.size() == 0){
+			card C;
+			C = numberToCard(0);
+			return C;
+		}
+		card C = D[0];
+		D.erase(D.begin());
+		return C;
+	}
+
+	/*--Wrote for test--*/
+
+	void printCard(card C) {
+		std::string icon;
+		switch (C.icon) {
+		case 0:
+			icon = "spade";
+			break;
+		case 1:
+			icon = "heart";
+			break;
+		case 2:
+			icon = "club";
+			break;
+		case 3:
+			icon = "diamond";
+			break;
+		case -1:
+			icon = "joker";
+		}
+		printf("card : %s\n", (icon + " " + std::to_string(C.number + 1)).c_str());
+	}
+
+	void printDeck(std::vector<card> V) {
+		for (int i = 0; i < V.size(); i++) {
+			printCard(V[i]);
+		}
+	}
 }
+
+typedef std::vector<qasino::card> deck;
 
 class QasinoBot;
 
@@ -252,6 +391,7 @@ public:
 	qasino::qambler GetPlayer() { return _player; };
 	bool OnStart(SleepyDiscord::Interaction interaction);
 	bool Clear();
+	bool EndGame(int result, int money);
 	bool GetLeastBet() { return _leastbet; };
 	SoloGame(std::string name, std::string id, int leastbetting = 3) : _name(name), _gameID(id), _leastbet(leastbetting){
 		Clear();
@@ -274,7 +414,12 @@ public:
 };
 
 class BlackJack : public SoloGame {
-	int _score[2];
+	int _score;
+	int _dealer;
+	deck _deck;
+	virtual bool Clear();
+	bool Process(SleepyDiscord::Interaction interaction, bool start);
+
 };
 
 class QasinoBot : public SleepyDiscord::DiscordClient {

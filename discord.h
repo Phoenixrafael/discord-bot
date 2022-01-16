@@ -29,6 +29,9 @@
 #include <set>
 #include <map>
 
+#include "json.h"
+#include "json-forwards.h"
+
 #define AppID "861865296037543966"
 #define QasinoAppID "900757278590894090"
 #define ServerID "842631771367800852"
