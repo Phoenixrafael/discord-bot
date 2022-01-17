@@ -221,6 +221,7 @@ bool DiceBet::Process(Interaction interaction, bool start = false) {
 				_table = _table + (_bet[7] - '1' + 1) * _table / 10 * _count + ((((_bet[7] - '1' + 1) * _table * 2 - 1) / 20 * _count == 0) ? 1 : 0);
 				SleepyDiscord::Interaction::Response response;
 				response.data.embeds.push_back(Success(result));
+				response.data.content = "_ _";
 
 				SendMessageParams Sp;
 				Sp.channelID = interaction.channelID;
@@ -248,6 +249,7 @@ bool DiceBet::Process(Interaction interaction, bool start = false) {
 			else {
 				SleepyDiscord::Interaction::Response response;
 				response.data.embeds.push_back(Fail(result));
+				response.data.content = "_ _";
 				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 				client->createInteractionResponse(interaction, interaction.token, response);
 				Clear();
@@ -1032,7 +1034,7 @@ void QasinoBot::onReady(Ready readyData) {
 
 	_globalDeck = qasino::ClassicDeck(true, true);
 
-	//UpdStk();
+	UpdStk();
 }
 
 void QasinoBot::onMessage(SleepyDiscord::Message message) {
