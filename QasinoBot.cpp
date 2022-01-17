@@ -1023,8 +1023,14 @@ void QasinoBot::onReady(Ready readyData) {
 	createGlobalAppCommand(QasinoAppID, "chip", GetTextA("chip"), option2);
 
 
-	createGlobalAppCommand(QasinoAppID, "uptime", GetTextA("uptime")); */
+	createGlobalAppCommand(QasinoAppID, "uptime", GetTextA("uptime")); 
 
+	option.at(0).type = AppCommand::Option::Type::INTEGER;
+	option.at(0).name = "count";
+	option.at(0).description = GetTextA("cardpick-count");
+	option.at(0).isRequired = false;
+
+	createGlobalAppCommand(QasinoAppID, "cardpick", GetTextA("cardpick"), option);*/
 
 
 	stocks.push_back(qasino::CreateStock("Stock", 100, 20, 1, 3000));
@@ -1041,18 +1047,6 @@ void QasinoBot::onMessage(SleepyDiscord::Message message) {
 	saveMessage(message);
 	std::vector<std::string> input;
 	input = split(message.content, ' ');
-	if (input[0] == "./cardpick") {
-		sendMessage(message.channelID, _globalDeck.back().emoji());
-		_globalDeck.pop_back();
-		if (_globalDeck.size() == 0) {
-			_globalDeck = qasino::ClassicDeck(true, true);
-			sendMessage(message.channelID, "card reset!");
-		}
-	}
-	if (input[0] == "./cardreset") {
-		_globalDeck = qasino::ClassicDeck(true, true);
-		sendMessage(message.channelID, "card reset!");
-	}
 	if (message.author.ID.string() == Q_ID) {
 		if (input.size() != 0) {
 			if (input[0] == "||nick") {
@@ -1394,6 +1388,28 @@ void QasinoBot::onInteraction(Interaction interaction) {
 			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 			response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
 			createInteractionResponse(interaction, interaction.token, response);
+		}
+	}
+	else if (interaction.data.name == "cardpick") {
+		int count = interaction.data.options.at(0).value.GetInt();
+		if (count < 1 || count > 20) {
+			response.data.content = GetTextA("cardpick-invalid");
+			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+			createInteractionResponse(interaction, interaction.token, response);
+		}
+		else {
+			response.data.content = GetTextA("cardpick-process", std::to_string(count).c_str());
+			std::string packetemoji;
+			deck packet;
+			for (int i = 0; i < count; i++) {
+				packet.push_back(qasino::cardPick(_globalDeck, qasino::ClassicDeck(true, true)));
+			}
+			for (int i = 0; i < count; i++) {
+				packetemoji += packet[i].emoji();
+			}
+			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+			createInteractionResponse(interaction, interaction.token, response);
+			sendMessage(interaction.channelID, packetemoji);
 		}
 	}
 	else {

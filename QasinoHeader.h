@@ -326,14 +326,12 @@ namespace qasino {
 		return R;
 	}
 
-	card cardPick(std::vector<card>& D) {
+	card cardPick(std::vector<card>& D, std::vector<card> Restore) {
 		if(D.size() == 0){
-			card C;
-			C = numberToCard(0);
-			return C;
+			D = Restore;
 		}
-		card C = D[0];
-		D.erase(D.begin());
+		card C = D.back();
+		D.pop_back();
 		return C;
 	}
 
