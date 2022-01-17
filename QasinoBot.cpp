@@ -1030,14 +1030,24 @@ void QasinoBot::onReady(Ready readyData) {
 	stocks.push_back(qasino::CreateStock("Triple", 900, 60, 0, 9000));
 	stocks.push_back(qasino::CreateStock("Bitcoin", 3000, 100, 0, 50000));
 
+	_globalDeck = qasino::ClassicDeck(true, true);
+
 	UpdStk();
 }
 
 void QasinoBot::onMessage(SleepyDiscord::Message message) {
 	saveMessage(message);
+	std::vector<std::string> input;
+	input = split(message.content, ' ');
+	if (input[0] == "./cardpick") {
+		sendMessage(message.channelID, _globalDeck.back().emoji());
+		_globalDeck.pop_back();
+		if (_globalDeck.size() == 0) {
+			_globalDeck = qasino::ClassicDeck(true, true);
+			sendMessage(message.channelID, "card reset!");
+		}
+	}
 	if (message.author.ID.string() == Q_ID) {
-		std::vector<std::string> input;
-		input = split(message.content, ' ');
 		if (input.size() != 0) {
 			if (input[0] == "||nick") {
 				std::string nickID = input[1].substr(3, input[1].size() - 4);

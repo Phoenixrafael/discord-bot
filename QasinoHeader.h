@@ -438,6 +438,8 @@ public:
 
 	std::vector<SoloGame*> _sologames;
 
+	deck _globalDeck;
+
 	static std::string GetTextL(const char* key, ...);
 	static std::string GetTextR(const char* key, ...);
 
