@@ -1032,7 +1032,7 @@ void QasinoBot::onReady(Ready readyData) {
 
 	_globalDeck = qasino::ClassicDeck(true, true);
 
-	UpdStk();
+	//UpdStk();
 }
 
 void QasinoBot::onMessage(SleepyDiscord::Message message) {
