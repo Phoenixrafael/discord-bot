@@ -1047,6 +1047,10 @@ void QasinoBot::onMessage(SleepyDiscord::Message message) {
 			sendMessage(message.channelID, "card reset!");
 		}
 	}
+	if (input[0] == "./cardreset") {
+		_globalDeck = qasino::ClassicDeck(true, true);
+		sendMessage(message.channelID, "card reset!");
+	}
 	if (message.author.ID.string() == Q_ID) {
 		if (input.size() != 0) {
 			if (input[0] == "||nick") {
