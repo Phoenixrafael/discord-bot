@@ -363,6 +363,10 @@ namespace qasino {
 			printCard(V[i]);
 		}
 	}
+
+	std::string cardBack() {
+		return "<:card_back_a:932829578559377428><:card_back_b:932829578542612500>";
+	}
 }
 
 typedef std::vector<qasino::card> deck;
@@ -415,8 +419,15 @@ class BlackJack : public SoloGame {
 	int _score;
 	int _dealer;
 	deck _deck;
+	deck _playerPacket;
+	deck _dealerPacket;
+
 	virtual bool Clear();
 	bool Process(SleepyDiscord::Interaction interaction, bool start);
+public:
+	BlackJack(std::string id) : SoloGame("black-jack", id, 1) {
+		Clear();
+	}
 
 };
 

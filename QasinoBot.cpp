@@ -114,10 +114,10 @@ bool SoloGame::OnStart(Interaction interaction) {
 
 bool SoloGame::EndGame(int result, int money) {
 	SendMessageParams Sp;
-	Sp.content = GetTextA("solo-game-result", _displayname);
+	Sp.content = GetTextA("solo-game-result", _displayname.c_str());
 	Sp.channelID = _channel;
 	Embed E;
-	E.title = client->GetTextL("solo-game-result-title", _displayname);
+	E.title = client->GetTextL("solo-game-result-title", _displayname.c_str());
 	EmbedField BetMoney;
 	EmbedField GetMoney;
 	EmbedField Total;
@@ -127,23 +127,29 @@ bool SoloGame::EndGame(int result, int money) {
 	BetMoney.value = std::to_string(_betting);
 	if (result == true) {
 		_player.ChangeInt(qasino::SYS_MONEY, money);
-		E.title = client->GetTextL("solo-game-result-win");
+		client->writeQamblerInfo(_player);
+		E.description = client->GetTextL("solo-game-result-win", _player.nick.c_str());
 		GetMoney.value = std::to_string(money);
 		Total.value = std::to_string(money - _betting);
 	}
 	else if (result == false) {
-		E.title = client->GetTextL("solo-game-result-lose");
+		E.description = client->GetTextL("solo-game-result-lose", _player.nick.c_str());
 		GetMoney.value = std::to_string(0);
 		Total.value = std::to_string(0 - _betting);
 	}
 	else {
-		E.title = client->GetTextL("solo-game-result-tie");
+		E.description = client->GetTextL("solo-game-result-tie");
 		GetMoney.value = std::to_string(_betting);
 		Total.value = std::to_string(0);
 	}
+	BetMoney.isInline = true;
+	GetMoney.isInline = true;
+	Total.isInline = true;
 	E.fields.push_back(BetMoney);
 	E.fields.push_back(GetMoney);
 	E.fields.push_back(Total);
+	Sp.embed = E;
+	client->sendMessage(Sp);
 	Clear();
 	return true;
 }
@@ -252,7 +258,7 @@ bool DiceBet::Process(Interaction interaction, bool start = false) {
 				response.data.content = "_ _";
 				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 				client->createInteractionResponse(interaction, interaction.token, response);
-				Clear();
+				EndGame(false, _table);
 			}
 		}
 		else {
@@ -262,7 +268,7 @@ bool DiceBet::Process(Interaction interaction, bool start = false) {
 			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 			client->createInteractionResponse(interaction, interaction.token, response);
 
-			EndGame(false, _table);
+			EndGame(true, _table);
 		}
 	}
 	return true;
@@ -296,15 +302,37 @@ Embed DiceBet::Stop() {
 	E.color = 16756224;
 	E.title = client->GetTextL("dice-bet-stop-title");
 	E.description = client->GetTextL("dice-bet-stop-description");
-	EmbedField EF;
-	EF.name = client->GetTextL("dice-bet-stop-before");
-	EF.value = std::to_string(_betting);
-	E.fields.push_back(EF);
-	EF.name = client->GetTextL("dice-bet-stop-after");
-	EF.value = std::to_string(_table);
-	E.fields.push_back(EF);
 	return E;
 }
+
+bool BlackJack::Clear() {
+	_score = 0;
+	_dealer = 0;
+	_deck.clear();
+	SoloGame::Clear();
+	return true;
+}
+
+bool BlackJack::Process(Interaction interaction, bool start = false) {
+	if (start) {
+		_deck = qasino::ClassicDeck(true, false);
+		_playerPacket.push_back(qasino::cardPick(_deck, qasino::ClassicDeck(true, false)));
+		_playerPacket.push_back(qasino::cardPick(_deck, qasino::ClassicDeck(true, false)));
+		_dealerPacket.push_back(qasino::cardPick(_deck, qasino::ClassicDeck(true, false)));
+	}
+	else {
+
+	}
+	std::string player;
+	for (int i = 0; i < _playerPacket.size(); i++) {
+		player += _playerPacket[i].emoji();
+	}
+	std::string table = GetTextA("blackjack1p-table");
+	//for()
+
+	return true;
+}
+
 /*class MultiGameInterface {
 protected:
 	bool _play; // playing
