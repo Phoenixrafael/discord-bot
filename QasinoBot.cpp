@@ -261,6 +261,15 @@ bool DiceBet::Process(Interaction interaction, bool start = false) {
 				Ep.embed = Fail(result);
 				Ep.channelID = _channel;
 				Ep.messageID = GameMessage();
+				auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
+				auto button1 = std::make_shared<SleepyDiscord::Button>();
+				button1->style = SleepyDiscord::ButtonStyle::Danger;
+				button1->label = GetTextA("dice-bet-gameover");
+				button1->customID = "gameover";
+				button1->disabled = true;
+				actionRow->components.push_back(button1);
+				Ep.components.push_back(actionRow);
+				Ep.content = "_ _";
 				client->editMessage(Ep);
 				EndGame(false, _table);
 			}
@@ -273,6 +282,15 @@ bool DiceBet::Process(Interaction interaction, bool start = false) {
 			Ep.embed = Stop();
 			Ep.channelID = _channel;
 			Ep.messageID = GameMessage();
+			auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
+			auto button1 = std::make_shared<SleepyDiscord::Button>();
+			button1->style = SleepyDiscord::ButtonStyle::Danger;
+			button1->label = GetTextA("dice-bet-gameover");
+			button1->customID = "gameover";
+			button1->disabled = true;
+			actionRow->components.push_back(button1);
+			Ep.components.push_back(actionRow);
+			Ep.content = "_ _";
 			client->editMessage(Ep);
 			EndGame(true, _table);
 		}
