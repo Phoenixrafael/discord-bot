@@ -126,7 +126,7 @@ bool SoloGame::EndGame(int result, int money) {
 	Total.name = client->GetTextL("solo-game-result-tot");
 	BetMoney.value = std::to_string(_betting);
 	if (result == true) {
-		_player.ChangeInt(qasino::SYS_MONEY, money);
+		_player.ChangeInt(qasino::SYS_GAME_CHIP, money);
 		client->writeQamblerInfo(_player);
 		E.description = client->GetTextL("solo-game-result-win", _player.nick.c_str());
 		GetMoney.value = std::to_string(money);
