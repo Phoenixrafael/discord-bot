@@ -210,7 +210,8 @@ bool DiceBet::Process(Interaction interaction, bool start = false) {
 		auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
 		actionRow->components.push_back(selectmenus);
 		sP.components.push_back(actionRow);
-		client->sendMessage(sP);
+		Message message = client->sendMessage(sP);
+		SetMessage(message.ID);
 	}
 	else {
 		std::vector<std::string> SplitID = client->split(interaction.data.customID, '-');
@@ -222,15 +223,16 @@ bool DiceBet::Process(Interaction interaction, bool start = false) {
 		if (SplitID[2] == "go") {
 			_count++;
 			std::string tn = GetTextA(("dice-bet-" + _bet).c_str());
-			int result = client->RollDice(interaction.channelID, false, 0.5, GetTextA("dice-bet-dicelabel", std::to_string(_count).c_str(), tn.c_str()));
+			int result = client->RollDice(interaction.channelID, false, 0.5, GetTextA("dice-bet-dicelabel", std::to_string(_count).c_str(), tn.c_str()), true);
 			if (_bet[result - 1] == '1') {
 				_table = _table + (_bet[7] - '1' + 1) * _table / 10 * _count + ((((_bet[7] - '1' + 1) * _table * 2 - 1) / 20 * _count == 0) ? 1 : 0);
 				SleepyDiscord::Interaction::Response response;
-				response.data.embeds.push_back(Success(result));
-				response.data.content = "_ _";
+				response.type = SleepyDiscord::Interaction::Response::Type::DeferredUpdateMessage;
+				client->createInteractionResponse(interaction, interaction.token, response);
 
-				SendMessageParams Sp;
-				Sp.channelID = interaction.channelID;
+				EditMessageParams Ep;
+				Ep.messageID = GameMessage();
+				Ep.channelID = interaction.channelID;
 
 				auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
 				auto button1 = std::make_shared<SleepyDiscord::Button>();
@@ -246,28 +248,32 @@ bool DiceBet::Process(Interaction interaction, bool start = false) {
 				button2->disabled = false;
 				actionRow->components.push_back(button2);
 
-				Sp.components.push_back(actionRow);
-				Sp.content = "_ _";
-				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
-				client->createInteractionResponse(interaction, interaction.token, response);
-				client->sendMessage(Sp);
+				Ep.components.push_back(actionRow);
+				Ep.content = "_ _";
+				Ep.embed = Success(result);
+				client->editMessage(Ep);
 			}
 			else {
 				SleepyDiscord::Interaction::Response response;
-				response.data.embeds.push_back(Fail(result));
-				response.data.content = "_ _";
-				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+				response.type = SleepyDiscord::Interaction::Response::Type::DeferredUpdateMessage;
 				client->createInteractionResponse(interaction, interaction.token, response);
+				EditMessageParams Ep;
+				Ep.embed = Fail(result);
+				Ep.channelID = _channel;
+				Ep.messageID = GameMessage();
+				client->editMessage(Ep);
 				EndGame(false, _table);
 			}
 		}
 		else {
 			SleepyDiscord::Interaction::Response response;
-			response.data.embeds.push_back(Stop());
-			response.data.content = "_ _";
-			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+			response.type = SleepyDiscord::Interaction::Response::Type::DeferredUpdateMessage;
 			client->createInteractionResponse(interaction, interaction.token, response);
-
+			EditMessageParams Ep;
+			Ep.embed = Stop();
+			Ep.channelID = _channel;
+			Ep.messageID = GameMessage();
+			client->editMessage(Ep);
 			EndGame(true, _table);
 		}
 	}
@@ -325,10 +331,20 @@ bool BlackJack::Process(Interaction interaction, bool start = false) {
 	}
 	std::string player;
 	for (int i = 0; i < _playerPacket.size(); i++) {
-		player += _playerPacket[i].emoji();
+		player += _playerPacket[i].mark == 1
+			?
+			_playerPacket[i].emoji() : 
+			replaceAll(replaceAll(_playerPacket[i].emoji(), "<:card_black_1:917005102563332096>", "<:bjcard_black_11:932820184316649483>"),
+			"<:card_red_1:917005102051651604>", "<:bjcard_red_11:932820184434081833>");
 	}
-	std::string table = GetTextA("blackjack1p-table");
-	//for()
+	std::string dealer;
+	for (int i = 0; i < _dealerPacket.size(); i++) {
+		dealer += _dealerPacket[i].emoji();
+	}
+	if (_dealerPacket.size() == 1) {
+		dealer += qasino::cardBack();
+	}
+	std::string table = GetTextA("blackjack1p-table", player.c_str(), dealer.c_str());
 
 	return true;
 }
@@ -831,7 +847,7 @@ void QasinoBot::UpdNick(std::string ID, std::string nick, bool IsBeggar = false)
 	}
 }
 
-void QasinoBot::DiceEdit(std::string MessageID, std::string ChannelID, Embed E, int result) {
+void QasinoBot::DiceEdit(std::string MessageID, std::string ChannelID, Embed E, int result, bool Delete) {
 	EditMessageParams Ep;
 	Ep.content = "_ _";
 	Ep.channelID = ChannelID;
@@ -856,9 +872,12 @@ void QasinoBot::DiceEdit(std::string MessageID, std::string ChannelID, Embed E, 
 	Ep.embed.description = GetTextA("dice-end-dsc", Numbers[result - 1].c_str());
 	Ep.embed.thumbnail.url = Images[result - 1];
 	editMessage(Ep);
+	if (Delete) {
+		schedule([this, ChannelID, MessageID]() {this->deleteMessage(ChannelID, MessageID); }, 2000);
+	}
 }
 
-int QasinoBot::RollDice(std::string ChannelID, bool iseasteregg = false, float time = 1, std::string name = "~~~") {
+int QasinoBot::RollDice(std::string ChannelID, bool iseasteregg = false, float time = 1, std::string name = "~~~", bool Delete = false) {
 	if (name == "~~~") {
 		name = GetTextL("dice-title");
 	}
@@ -882,7 +901,7 @@ int QasinoBot::RollDice(std::string ChannelID, bool iseasteregg = false, float t
 	if (iseasteregg && esdis(rd) == 1) {
 		result = 6 + es(rd);
 	}
-	schedule([this, result, E, ChannelID, Msg]() {this->DiceEdit(Msg.ID.string(), ChannelID, E, result); }, 1000 * time);
+	schedule([this, result, E, ChannelID, Delete, Msg]() {this->DiceEdit(Msg.ID.string(), ChannelID, E, result, Delete); }, 1000 * time);
 	return result;
 }
 

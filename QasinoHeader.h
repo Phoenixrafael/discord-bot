@@ -200,6 +200,7 @@ namespace qasino {
 		int icon;
 		int number;
 		int joker;
+		int mark;
 		int num() {
 			if (joker == 0) {
 				return icon * 13 + number;
@@ -286,18 +287,8 @@ namespace qasino {
 			C.icon = -1;
 			C.number = -1;
 		}
+		C.mark = 0;
 		return C;
-	}
-
-	card customNumberToCard(int a, std::vector<int> manual) {
-		int b = 0;
-		for (int i = 0; i < a; i++) {
-			if (manual[b] <= 0) {
-				b++;
-			}
-			manual[b]--;
-		}
-		return numberToCard(b);
 	}
 
 	void ShuffleDeck(std::vector<card>& D) {
@@ -383,11 +374,14 @@ protected:
 	std::string _name;
 	std::string _displayname;
 	std::string _gameID;
+	std::string _messageID;
 
 public:
 	virtual bool Process(SleepyDiscord::Interaction interaction, bool start);
 	std::string GetName() { return _name; };
 	std::string GetID() { return _gameID; };
+	std::string GameMessage() { return _messageID; };
+	void SetMessage(std::string S) { _messageID = S; }
 	bool IsPlaying() { return _playing; };
 	int GetBetting() { return _betting; };
 	qasino::qambler GetPlayer() { return _player; };
@@ -464,8 +458,8 @@ public:
 	std::vector<std::string> split(std::string input, char delimiter);
 	void UpdStk();
 	void UpdNick(std::string ID, std::string nick, bool IsBeggar);
-	void DiceEdit(std::string MessageID, std::string ChannelID, SleepyDiscord::Embed E, int result);
-	int RollDice(std::string ChannelID, bool iseasteregg, float time, std::string name);
+	void DiceEdit(std::string MessageID, std::string ChannelID, SleepyDiscord::Embed E, int result, bool Delete);
+	int RollDice(std::string ChannelID, bool iseasteregg, float time, std::string name, bool Delete);
 
 	void saveMessage(SleepyDiscord::Message message);
 
