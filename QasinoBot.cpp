@@ -330,12 +330,12 @@ bool BlackJack::Process(Interaction interaction, bool start = false) {
 
 	}
 	std::string player;
+	std::string error;
 	for (int i = 0; i < _playerPacket.size(); i++) {
-		player += _playerPacket[i].mark == 1
-			?
-			_playerPacket[i].emoji() : 
-			replaceAll(replaceAll(_playerPacket[i].emoji(), "<:card_black_1:917005102563332096>", "<:bjcard_black_11:932820184316649483>"),
-			"<:card_red_1:917005102051651604>", "<:bjcard_red_11:932820184434081833>");
+		error = _playerPacket[i].emoji();
+		replaceAll(error, "<:card_black_1:917005102563332096>", "<:bjcard_black_11:932820184316649483>");
+		replaceAll(error, "<:card_red_1:917005102051651604>", "<:bjcard_red_11:932820184434081833>");
+		player += _playerPacket[i].mark == 1 ? _playerPacket[i].emoji() : error;
 	}
 	std::string dealer;
 	for (int i = 0; i < _dealerPacket.size(); i++) {
