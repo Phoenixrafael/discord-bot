@@ -330,39 +330,273 @@ Embed DiceBet::Stop() {
 }
 
 bool BlackJack::Clear() {
+	_stand = 0;
 	_score = 0;
 	_dealer = 0;
+	_doubledown = 0;
 	_deck.clear();
 	SoloGame::Clear();
 	return true;
 }
 
+int BlackJack::CardToScore(card C) {
+	C.number++;
+	if (C.number > 10) {
+		C.number = 10;
+	}
+	if (C.number == 1) {
+		if (C.mark == 1) {
+			return 11;
+		}
+	}
+	return C.number;
+}
+
 bool BlackJack::Process(Interaction interaction, bool start = false) {
 	if (start) {
+		_stand = 0;
+		_score = 0;
+		_dealer = 0;
+		_doubledown = 0;
 		_deck = qasino::ClassicDeck(true, false);
 		_playerPacket.push_back(qasino::cardPick(_deck, qasino::ClassicDeck(true, false)));
 		_playerPacket.push_back(qasino::cardPick(_deck, qasino::ClassicDeck(true, false)));
 		_dealerPacket.push_back(qasino::cardPick(_deck, qasino::ClassicDeck(true, false)));
+		Message message = client->sendMessage(_channel, "_ _");
+		SetMessage(message.ID);
 	}
 	else {
-
+		std::vector<std::string> SplitID = client->split(interaction.data.customID, '-');
+		if (SplitID[2] == "hit") {
+			SleepyDiscord::Interaction::Response response;
+			response.type = SleepyDiscord::Interaction::Response::Type::DeferredUpdateMessage;
+			client->createInteractionResponse(interaction, interaction.token, response);
+			_playerPacket.push_back(qasino::cardPick(_deck, qasino::ClassicDeck(true, false)));
+		}
+		else if (SplitID[2] == "stand") {
+			SleepyDiscord::Interaction::Response response;
+			response.type = SleepyDiscord::Interaction::Response::Type::DeferredUpdateMessage;
+			client->createInteractionResponse(interaction, interaction.token, response);
+			_stand = true;
+		}
+		else if (SplitID[2] == "doubledown") {
+			if (_player.GetInt(qasino::SYS_GAME_CHIP) >= _betting) {
+				_betting *= 2;
+				_player.ChangeInt(qasino::SYS_GAME_CHIP, _betting * -1);
+				client->writeQamblerInfo(_player);
+				SleepyDiscord::Interaction::Response response;
+				response.type = SleepyDiscord::Interaction::Response::Type::DeferredUpdateMessage;
+				client->createInteractionResponse(interaction, interaction.token, response);
+				_doubledown = true;
+			}
+			else {
+				SleepyDiscord::Interaction::Response response;
+				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+				response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
+				response.data.content = GetTextA("blackjack1p-doubledown-fail");
+				client->createInteractionResponse(interaction, interaction.token, response);
+				return true;
+			}
+		}
+		else if (SplitID[2] == "next") {
+			SleepyDiscord::Interaction::Response response;
+			response.type = SleepyDiscord::Interaction::Response::Type::DeferredUpdateMessage;
+			client->createInteractionResponse(interaction, interaction.token, response);
+			if (_doubledown) {
+				_playerPacket.push_back(qasino::cardPick(_deck, qasino::ClassicDeck(true, false)));
+				_doubledown = false;
+				_stand = true;
+			}
+			else {
+				_dealerPacket.push_back(qasino::cardPick(_deck, qasino::ClassicDeck(true, false)));
+			}
+		}
+		else if (SplitID[2] == "aceno") {
+			SleepyDiscord::Interaction::Response response;
+			response.type = SleepyDiscord::Interaction::Response::Type::DeferredUpdateMessage;
+			client->createInteractionResponse(interaction, interaction.token, response);
+			_playerPacket.back().mark = 2;
+		}
+		else if (SplitID[2] == "aceyes") {
+			SleepyDiscord::Interaction::Response response;
+			response.type = SleepyDiscord::Interaction::Response::Type::DeferredUpdateMessage;
+			client->createInteractionResponse(interaction, interaction.token, response);
+			_playerPacket.back().mark = 1;
+		}
 	}
 	std::string player;
+	int& playerscore = _score;
+	playerscore = 0;
 	std::string error;
 	for (int i = 0; i < _playerPacket.size(); i++) {
 		error = _playerPacket[i].emoji();
 		replaceAll(error, "<:card_black_1:917005102563332096>", "<:bjcard_black_11:932820184316649483>");
 		replaceAll(error, "<:card_red_1:917005102051651604>", "<:bjcard_red_11:932820184434081833>");
-		player += _playerPacket[i].mark == 1 ? _playerPacket[i].emoji() : error;
+		player += _playerPacket[i].mark == 1 ? error : _playerPacket[i].emoji();
+		playerscore += CardToScore(_playerPacket[i]);
 	}
 	std::string dealer;
+	int& dealerscore = _dealer;
+	dealerscore = 0;
 	for (int i = 0; i < _dealerPacket.size(); i++) {
-		dealer += _dealerPacket[i].emoji();
+		_dealerPacket[i].mark = i==0?0:1;
+		error = _dealerPacket[i].emoji();
+		replaceAll(error, "<:card_black_1:917005102563332096>", "<:bjcard_black_11:932820184316649483>");
+		replaceAll(error, "<:card_red_1:917005102051651604>", "<:bjcard_red_11:932820184434081833>");
+		dealer += error;
+		dealerscore += CardToScore(_dealerPacket[i]);
 	}
 	if (_dealerPacket.size() == 1) {
+		dealerscore = CardToScore(_dealerPacket[0]);
 		dealer += qasino::cardBack();
 	}
-	std::string table = GetTextA("blackjack1p-table", player.c_str(), dealer.c_str());
+	EditMessageParams Ep;
+	Ep.content = GetTextA("blackjack1p-table", player.c_str(),
+		dealer.c_str(),
+		std::to_string(playerscore).c_str(),
+		std::to_string(dealerscore).c_str());
+	Ep.channelID = _channel;
+	Ep.messageID = GameMessage();
+
+	if (_playerPacket.back().number == 0 && _playerPacket.back().mark == 0) {
+		Ep.content += GetTextA("blackjack1p-ace");
+		auto button1 = std::make_shared<SleepyDiscord::Button>();
+		auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
+		button1->style = SleepyDiscord::ButtonStyle::Success;
+		button1->label = GetTextA("blackjack-aceyes");
+		button1->customID = "solo-" + GetID() + "-aceyes";
+		button1->disabled = false;
+		actionRow->components.push_back(button1);
+
+		auto button2 = std::make_shared<SleepyDiscord::Button>();
+		button2->style = SleepyDiscord::ButtonStyle::Danger;
+		button2->label = GetTextA("blackjack-aceno");
+		button2->customID = "solo-" + GetID() + "-aceno";
+		button1->disabled = false;
+		actionRow->components.push_back(button2);
+		Ep.components.clear();
+		Ep.components.push_back(actionRow);
+		client->editMessage(Ep);
+		return true;
+	}
+
+	auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
+	auto button1 = std::make_shared<SleepyDiscord::Button>();
+	button1->style = SleepyDiscord::ButtonStyle::Primary;
+	button1->label = GetTextA("blackjack-hit");
+	button1->customID = "solo-" + GetID() + "-hit";
+	button1->disabled = _doubledown || _stand;
+	actionRow->components.push_back(button1);
+
+	auto button2 = std::make_shared<SleepyDiscord::Button>();
+	button2->style = SleepyDiscord::ButtonStyle::Secondary;
+	button2->label = GetTextA("blackjack-stand");
+	button2->customID = "solo-" + GetID() + "-stand";
+	button2->disabled = _doubledown || _stand;
+	actionRow->components.push_back(button2);
+
+	auto button3 = std::make_shared<SleepyDiscord::Button>();
+	button3->style = SleepyDiscord::ButtonStyle::Danger;
+	button3->label = GetTextA("blackjack-doubledown");
+	button3->customID = "solo-" + GetID() + "-doubledown";
+	button3->disabled = _doubledown || _stand;
+	actionRow->components.push_back(button3);
+
+	Ep.components.push_back(actionRow);
+
+	if (playerscore > 21) {
+		Ep.content = GetTextA("blackjack1p-table-bust", player.c_str(),
+			dealer.c_str(),
+			std::to_string(playerscore).c_str(),
+			std::to_string(dealerscore).c_str());
+		auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
+		auto button1 = std::make_shared<SleepyDiscord::Button>();
+		button1->style = SleepyDiscord::ButtonStyle::Danger;
+		button1->label = GetTextA("dice-bet-gameover");
+		button1->customID = "gameover";
+		button1->disabled = true;
+		actionRow->components.push_back(button1);
+		Ep.components.clear();
+		Ep.components.push_back(actionRow);
+		client->editMessage(Ep);
+		EndGame(false, 0);
+		return 0;
+	}else if(playerscore == 21 && _playerPacket.size() == 2){
+		Ep.content = GetTextA("blackjack1p-table-bj", player.c_str(),
+			dealer.c_str(),
+			std::to_string(dealerscore).c_str());
+		auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
+		auto button1 = std::make_shared<SleepyDiscord::Button>();
+		button1->style = SleepyDiscord::ButtonStyle::Danger;
+		button1->label = GetTextA("dice-bet-gameover");
+		button1->customID = "gameover";
+		button1->disabled = true;
+		actionRow->components.push_back(button1);
+		Ep.components.clear();
+		Ep.components.push_back(actionRow);
+		client->editMessage(Ep);
+		EndGame(true, _betting * 2);
+	}
+	if (_doubledown || _stand) {
+		Ep.components.clear();
+
+		auto button4 = std::make_shared<SleepyDiscord::Button>();
+		button4->style = SleepyDiscord::ButtonStyle::Success;
+		button4->label = GetTextA("blackjack-next");
+		button4->customID = "solo-" + GetID() + "-next";
+		button4->disabled = false;
+		actionRow->components.push_back(button4);
+		Ep.components.push_back(actionRow);
+		if (_stand) {
+			Ep.content = GetTextA("blackjack1p-table-stand", player.c_str(),
+				dealer.c_str(),
+				std::to_string(playerscore).c_str(),
+				std::to_string(dealerscore).c_str());
+		}
+		if (_doubledown) {
+			Ep.content = GetTextA("blackjack1p-table-doubledown", player.c_str(),
+				dealer.c_str(),
+				std::to_string(playerscore).c_str(),
+				std::to_string(dealerscore).c_str());
+		}
+	}
+	if (_stand && dealerscore > 21) {
+		Ep.content = GetTextA("blackjack1p-table-playerwin", player.c_str(),
+			dealer.c_str(),
+			std::to_string(playerscore).c_str(),
+			std::to_string(dealerscore).c_str());
+		auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
+		auto button1 = std::make_shared<SleepyDiscord::Button>();
+		button1->style = SleepyDiscord::ButtonStyle::Danger;
+		button1->label = GetTextA("dice-bet-gameover");
+		button1->customID = "gameover";
+		button1->disabled = true;
+		actionRow->components.push_back(button1);
+		Ep.components.clear();
+		Ep.components.push_back(actionRow);
+		client->editMessage(Ep);
+		EndGame(true, _betting*2);
+		return 0;
+	}
+	if (_stand && playerscore <= dealerscore) {
+		Ep.content = GetTextA("blackjack1p-table-dealerwin", player.c_str(),
+			dealer.c_str(),
+			std::to_string(playerscore).c_str(),
+			std::to_string(dealerscore).c_str());
+		auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
+		auto button1 = std::make_shared<SleepyDiscord::Button>();
+		button1->style = SleepyDiscord::ButtonStyle::Danger;
+		button1->label = GetTextA("dice-bet-gameover");
+		button1->customID = "gameover";
+		button1->disabled = true;
+		actionRow->components.push_back(button1);
+		Ep.components.clear();
+		Ep.components.push_back(actionRow);
+		client->editMessage(Ep);
+		EndGame(false, 0);
+		return 0;
+	}
+	client->editMessage(Ep);
 
 	return true;
 }
@@ -1043,6 +1277,9 @@ void QasinoBot::onReady(Ready readyData) {
 	choice.value = "dice-bet";
 	choice.name = GetTextL("solo-dice-bet");
 	option2.at(0).choices.push_back(std::move(choice));
+	choice.value = "blackjack";
+	choice.name = GetTextL("solo-blackjack");
+	option2.at(0).choices.push_back(std::move(choice));
 
 	/*---*/
 
@@ -1382,7 +1619,10 @@ void QasinoBot::onInteraction(Interaction interaction) {
 		if (gametype == "dice-bet") {
 			DiceBet* dicebet = new DiceBet(interaction.ID);
 			_sologames.push_back(dicebet);
-			printf("%s", interaction.ID.string().c_str());
+		}
+		if (gametype == "blackjack") {
+			BlackJack* blackjack = new BlackJack(interaction.ID);
+			_sologames.push_back(blackjack);
 		}
 		SoloGame* soloGame;
 		for (std::vector<SoloGame*>::iterator it = _sologames.begin(); it != _sologames.end(); it++) {

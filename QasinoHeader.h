@@ -412,14 +412,17 @@ public:
 class BlackJack : public SoloGame {
 	int _score;
 	int _dealer;
+	bool _stand;
+	bool _doubledown;
 	deck _deck;
 	deck _playerPacket;
 	deck _dealerPacket;
 
 	virtual bool Clear();
 	bool Process(SleepyDiscord::Interaction interaction, bool start);
+	int CardToScore(qasino::card C);
 public:
-	BlackJack(std::string id) : SoloGame("black-jack", id, 1) {
+	BlackJack(std::string id) : SoloGame("blackjack", id, 1) {
 		Clear();
 	}
 
