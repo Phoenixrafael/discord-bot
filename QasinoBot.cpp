@@ -362,6 +362,14 @@ bool BlackJack::Process(Interaction interaction, bool start = false) {
 		_playerPacket.push_back(qasino::cardPick(_deck, qasino::ClassicDeck(true, false)));
 		_playerPacket.push_back(qasino::cardPick(_deck, qasino::ClassicDeck(true, false)));
 		_dealerPacket.push_back(qasino::cardPick(_deck, qasino::ClassicDeck(true, false)));
+		if (_dealerPacket.back().number == 0) {
+			if (_dealer > 10) {
+				_dealerPacket.back().mark == 2;
+			}
+			else {
+				_dealerPacket.back().mark == 1;
+			}
+		}
 		Message message = client->sendMessage(_channel, "_ _");
 		SetMessage(message.ID);
 	}
@@ -409,6 +417,14 @@ bool BlackJack::Process(Interaction interaction, bool start = false) {
 			}
 			else {
 				_dealerPacket.push_back(qasino::cardPick(_deck, qasino::ClassicDeck(true, false)));
+				if (_dealerPacket.back().number == 0) {
+					if (_dealer > 10) {
+						_dealerPacket.back().mark == 2;
+					}
+					else {
+						_dealerPacket.back().mark == 1;
+					}
+				}
 			}
 		}
 		else if (SplitID[2] == "aceno") {
@@ -439,11 +455,10 @@ bool BlackJack::Process(Interaction interaction, bool start = false) {
 	int& dealerscore = _dealer;
 	dealerscore = 0;
 	for (int i = 0; i < _dealerPacket.size(); i++) {
-		_dealerPacket[i].mark = i==0?0:1;
 		error = _dealerPacket[i].emoji();
 		replaceAll(error, "<:card_black_1:917005102563332096>", "<:bjcard_black_11:932820184316649483>");
 		replaceAll(error, "<:card_red_1:917005102051651604>", "<:bjcard_red_11:932820184434081833>");
-		dealer += error;
+		dealer += _dealerPacket[i].mark==1?_dealerPacket[i].emoji():error;
 		dealerscore += CardToScore(_dealerPacket[i]);
 	}
 	if (_dealerPacket.size() == 1) {
