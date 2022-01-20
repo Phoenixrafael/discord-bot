@@ -1651,12 +1651,19 @@ public:
 	}
 };
 
+std::string GetToken(const char* key, ...) {
+	std::string ret = GetTextA(key);
+	replaceAll(ret, "\n", "");
+	replaceAll(ret, "\r", "");
+	return ret;
+}
+
 int main()
 {
 	printf("LabyrinthBot execute\n");
 	textManager.Initialize("default.txt");
 
-	LabyrinthBot client(LabyToken, SleepyDiscord::Mode::USER_CONTROLED_THREADS);
+	LabyrinthBot client(GetToken("LabyToken"), SleepyDiscord::Mode::USER_CONTROLED_THREADS);
 	client.setIntents(Intent::SERVER_MESSAGES, Intent::DIRECT_MESSAGES, Intent::SERVER_MESSAGE_REACTIONS);
 	client.run();
 }

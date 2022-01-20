@@ -862,6 +862,14 @@ const char* TextManager::GetText(const char* key, ...)
 
 	return current.c_str();
 }
+
+std::string GetToken(const char* key, ...) {
+	std::string ret = GetTextA(key);
+	replaceAll(ret, "\n", "");
+	replaceAll(ret, "\r", "");
+	return ret;
+}
+
 std::string QasinoBot::GetTextL(const char* key, ...) {
 	std::string ret = GetTextA(key);
 	replaceAll(ret, "\n", "");
@@ -1727,7 +1735,8 @@ int main()
 {
 	printf("QasinoBot execute\n");
 	textManager.Initialize("qasino.txt");
-	client = new QasinoBot(QasinoToken, SleepyDiscord::Mode::USER_CONTROLED_THREADS);
+
+	client = new QasinoBot(GetToken("QasinoToken"), SleepyDiscord::Mode::USER_CONTROLED_THREADS);
 	client->Clear();
 	client->setIntents(Intent::SERVER_MESSAGES, Intent::DIRECT_MESSAGES, Intent::SERVER_MESSAGE_REACTIONS);
 	client->run();

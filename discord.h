@@ -36,8 +36,6 @@
 #define QasinoAppID "900757278590894090"
 #define ServerID "842631771367800852"
 #define QasinoServerID "842631771367800852"
-#define LabyToken "ODYxODY1Mjk2MDM3NTQzOTY2.YOQAmw.7e4kiaL5QZT11iXLiSudPSLaE5Q"
-#define QasinoToken "OTAwNzU3Mjc4NTkwODk0MDkw.YXF9lg.7wcHoTZAm4_oOpECURxC-ITDK9s"
 #define GetTextA textManager.GetText
 #define DIR_LETTER	'/'
 #define Q_ID "640341085297704970"
