@@ -1667,6 +1667,43 @@ std::string GetToken(const char* key, ...) {
 	replaceAll(ret, "\r", "");
 	return hexdeprint(ret);
 }
+std::string hexdeprint(std::string inpstr)
+{
+	std::string output;
+	char str[1000];
+	strcpy(str, inpstr.c_str());
+	char buf[1000];
+	int a;
+	for (int i = 0; i < (int)inpstr.length(); i++) {
+		a = 0;
+		if ('0' <= str[i] && '9' >= str[i]) {
+			a += 16 * (str[i] - '0');
+		}
+		else if ('a' <= str[i] && 'f' >= str[i]) {
+			a += 16 * (str[i] - 'a' + 10);
+		}
+		else {
+			output = "ERROR!";
+			return "";
+		}
+		i++;
+		if ('0' <= str[i] && '9' >= str[i]) {
+			a += str[i] - '0';
+		}
+		else if ('a' <= str[i] && 'f' >= str[i]) {
+			a += str[i] - 'a' + 10;
+		}
+		else {
+			output = "ERROR!";
+			return "";
+		}
+		buf[(i - 1) / 2] = a;
+		buf[(i - 1) / 2 + 1] = '\0';
+	}
+	buf[999] = '\0';
+	output = buf;
+	return output;
+}
 
 int main()
 {
