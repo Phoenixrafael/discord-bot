@@ -1661,12 +1661,6 @@ std::string replaceAll(std::string& str, std::string from, std::string to) {
 	return str;
 }
 
-std::string GetToken(const char* key, ...) {
-	std::string ret = GetTextA(key);
-	replaceAll(ret, "\n", "");
-	replaceAll(ret, "\r", "");
-	return hexdeprint(ret);
-}
 std::string hexdeprint(std::string inpstr)
 {
 	std::string output;
@@ -1703,6 +1697,13 @@ std::string hexdeprint(std::string inpstr)
 	buf[999] = '\0';
 	output = buf;
 	return output;
+}
+
+std::string GetToken(const char* key, ...) {
+	std::string ret = GetTextA(key);
+	replaceAll(ret, "\n", "");
+	replaceAll(ret, "\r", "");
+	return hexdeprint(ret);
 }
 
 int main()
