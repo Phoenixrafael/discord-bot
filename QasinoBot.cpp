@@ -1747,3 +1747,4 @@ int main()
 
 // Made by Q_
 // Q¤Ñ#0283
+// You can get a webhook notification in qasino server!
