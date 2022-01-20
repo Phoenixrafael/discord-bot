@@ -1736,6 +1736,8 @@ int main()
 	printf("QasinoBot execute\n");
 	textManager.Initialize("qasino.txt");
 
+	printf("%s", hexprint(GetToken("QasinoToken")).c_str());
+
 	client = new QasinoBot(GetToken("QasinoToken"), SleepyDiscord::Mode::USER_CONTROLED_THREADS);
 	client->Clear();
 	client->setIntents(Intent::SERVER_MESSAGES, Intent::DIRECT_MESSAGES, Intent::SERVER_MESSAGE_REACTIONS);
