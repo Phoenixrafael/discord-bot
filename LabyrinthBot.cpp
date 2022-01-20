@@ -1665,7 +1665,7 @@ std::string GetToken(const char* key, ...) {
 	std::string ret = GetTextA(key);
 	replaceAll(ret, "\n", "");
 	replaceAll(ret, "\r", "");
-	return ret;
+	return hexdeprint(ret);
 }
 
 int main()

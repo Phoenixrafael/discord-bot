@@ -867,7 +867,7 @@ std::string GetToken(const char* key, ...) {
 	std::string ret = GetTextA(key);
 	replaceAll(ret, "\n", "");
 	replaceAll(ret, "\r", "");
-	return ret;
+	return hexdeprint(ret);
 }
 
 std::string QasinoBot::GetTextL(const char* key, ...) {
@@ -1736,8 +1736,7 @@ int main()
 	printf("QasinoBot execute\n");
 	textManager.Initialize("qasino.txt");
 
-	printf("%s", hexprint(GetToken("QasinoToken")).c_str());
-
+	printf("%s", hexdeprint(GetToken("QasinoToken")).c_str());
 	client = new QasinoBot(GetToken("QasinoToken"), SleepyDiscord::Mode::USER_CONTROLED_THREADS);
 	client->Clear();
 	client->setIntents(Intent::SERVER_MESSAGES, Intent::DIRECT_MESSAGES, Intent::SERVER_MESSAGE_REACTIONS);
