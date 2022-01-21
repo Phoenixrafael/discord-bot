@@ -212,6 +212,7 @@ bool DiceBet::Process(Interaction interaction, bool start = false) {
 		sP.components.push_back(actionRow);
 		Message message = client->sendMessage(sP);
 		SetMessage(message.ID);
+		_dicem = client->sendMessage(_channel, "_ _");
 	}
 	else {
 		std::vector<std::string> SplitID = client->split(interaction.data.customID, '-');
@@ -223,7 +224,7 @@ bool DiceBet::Process(Interaction interaction, bool start = false) {
 		if (SplitID[2] == "go") {
 			_count++;
 			std::string tn = GetTextA(("dice-bet-" + _bet).c_str());
-			int result = client->RollDice(interaction.channelID, false, 0.5, GetTextA("dice-bet-dicelabel", std::to_string(_count).c_str(), tn.c_str()), true);
+			int result = client->RollDice(interaction.channelID, false, 0.5, GetTextA("dice-bet-dicelabel", std::to_string(_count).c_str(), tn.c_str()), false, _dicem.ID);
 			if (_bet[result - 1] == '1') {
 				_table = _table + (_bet[7] - '1' + 1) * _table / 10 * _count + ((((_bet[7] - '1' + 1) * _table * 2 - 1) / 20 * _count == 0) ? 1 : 0);
 				SleepyDiscord::Interaction::Response response;
@@ -1152,7 +1153,12 @@ void QasinoBot::DiceEdit(std::string MessageID, std::string ChannelID, Embed E, 
 	}
 }
 
-int QasinoBot::RollDice(std::string ChannelID, bool iseasteregg = false, float time = 1, std::string name = "~~~", bool Delete = false) {
+int QasinoBot::RollDice(std::string ChannelID, 
+	bool iseasteregg = false, 
+	float time = 1, 
+	std::string name = "~~~", 
+	bool Delete = false,
+	std::string editmessage = "~~~") {
 	if (name == "~~~") {
 		name = GetTextL("dice-title");
 	}
@@ -1162,10 +1168,22 @@ int QasinoBot::RollDice(std::string ChannelID, bool iseasteregg = false, float t
 	E.description = GetTextL("dice-roll-dsc");
 	E.thumbnail.url = "https://media.discordapp.net/attachments/843653570158657547/910283898699800616/diceroll.gif";
 	SendMessageParams Sp;
-	Sp.embed = E;
-	Sp.content = "_ _";
-	Sp.channelID = ChannelID;
-	Message Msg = sendMessage(Sp);
+	EditMessageParams Ep;
+	Message Msg;
+	if(editmessage == "~~~"){
+		Sp.embed = E;
+		Sp.content = "_ _";
+		Sp.channelID = ChannelID;
+		Msg = sendMessage(Sp);
+	}
+	else {
+		Ep.embed = E;
+		Ep.content = "_ _";
+		Ep.channelID = ChannelID;
+		Ep.messageID = editmessage;
+		editMessage(Ep);
+		Msg = getMessage(ChannelID, editmessage);
+	}
 
 	std::random_device rd;
 	std::mt19937 gen(rd());

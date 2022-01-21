@@ -398,6 +398,7 @@ class DiceBet : public SoloGame {
 	std::string _bet;
 	int _count;
 	int _table;
+	SleepyDiscord::Message _dicem;
 	virtual bool Clear();
 	bool Process(SleepyDiscord::Interaction interaction, bool start);
 	SleepyDiscord::Embed Success(int result);
@@ -462,7 +463,7 @@ public:
 	void UpdStk();
 	void UpdNick(std::string ID, std::string nick, bool IsBeggar);
 	void DiceEdit(std::string MessageID, std::string ChannelID, SleepyDiscord::Embed E, int result, bool Delete);
-	int RollDice(std::string ChannelID, bool iseasteregg, float time, std::string name, bool Delete);
+	int RollDice(std::string ChannelID, bool iseasteregg, float time, std::string name, bool Delete, std::string editmessage);
 
 	void saveMessage(SleepyDiscord::Message message);
 
