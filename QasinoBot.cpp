@@ -390,8 +390,8 @@ bool BlackJack::Process(Interaction interaction, bool start = false) {
 		}
 		else if (SplitID[2] == "doubledown") {
 			if (_player.GetInt(qasino::SYS_GAME_CHIP) >= _betting) {
-				_betting *= 2;
 				_player.ChangeInt(qasino::SYS_GAME_CHIP, _betting * -1);
+				_betting *= 2;
 				client->writeQamblerInfo(_player);
 				SleepyDiscord::Interaction::Response response;
 				response.type = SleepyDiscord::Interaction::Response::Type::DeferredUpdateMessage;
