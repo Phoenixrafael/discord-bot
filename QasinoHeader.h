@@ -193,7 +193,7 @@ namespace qasino {
 		ECO_BITCOIN,
 		ECO_BITCOIN_MONEY,
 		ECO_ISBEGGAR = 20,
-
+		SYS_SPAMTIME = 21
 	};
 
 	struct card {

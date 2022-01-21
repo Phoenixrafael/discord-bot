@@ -1428,6 +1428,17 @@ void QasinoBot::onInteraction(Interaction interaction) {
 		UpdNick(iQB.ID, iQB.nick.substr(7), true);
 	}
 
+	if (CurrentTime() - iQB.GetLLong(qasino::SYS_SPAMTIME) <= 3) {
+		response.data.content = GetTextA("SPAM_X");
+		response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+		response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
+		createInteractionResponse(interaction, interaction.token, response);
+		return;
+	}
+
+	iQB.SetLLong(qasino::SYS_SPAMTIME, CurrentTime());
+	writeQamblerInfo(iQB);
+
 	if (interaction.type == Interaction::Type::MessageComponent) {
 		if (SplitID[0] == "solo") {
 			SoloGame* soloGame;
