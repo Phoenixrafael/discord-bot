@@ -1446,7 +1446,7 @@ void QasinoBot::onInteraction(Interaction interaction) {
 		UpdNick(iQB.ID, iQB.nick.substr(7), true);
 	}
 
-	if (CurrentTime() - iQB.GetLLong(qasino::SYS_SPAMTIME) <= 2) {
+	if (CurrentTime() - iQB.GetLLong(qasino::SYS_SPAMTIME) <= 3) {
 		response.data.content = GetTextA("SPAM_X");
 		response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 		response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
