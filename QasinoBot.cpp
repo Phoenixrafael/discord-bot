@@ -1415,6 +1415,15 @@ void QasinoBot::onMessage(SleepyDiscord::Message message) {
 			if (input[0] == "||dicetest") {
 				RollDice(message.channelID, false, 3);
 			}
+			if (input[0] == "||info") {
+				std::string infoID = input[1].substr(3, input[1].size() - 4);
+				int index;
+				std::stringstream SS(input[2]);
+				SS >> index;
+				qambler Qb = readQamblerInfo(infoID);
+				Qb.info[index] = input[3];
+				writeQamblerInfo(Qb);
+			}
 		}
 	}
 }
