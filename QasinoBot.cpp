@@ -1180,7 +1180,7 @@ int QasinoBot::RollDice(std::string ChannelID,
 		Ep.content = "_ _";
 		Ep.channelID = ChannelID;
 		Ep.messageID = editmessage;
-		editMessage(Ep);
+		//editMessage(Ep);
 		Msg = getMessage(ChannelID, editmessage);
 	}
 
