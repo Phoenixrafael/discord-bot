@@ -389,10 +389,40 @@ public:
 	bool Clear();
 	bool EndGame(int result, int money);
 	bool GetLeastBet() { return _leastbet; };
-	SoloGame(std::string name, std::string id, int leastbetting = 3) : _name(name), _gameID(id), _leastbet(leastbetting){
+	SoloGame(std::string name, std::string id, int leastbetting = 3) : _name(name), _gameID(id), _leastbet(leastbetting) {
 		Clear();
 	}
 };
+
+/*class TwoPGame {
+protected:
+	qasino::qambler _player[2];
+	int _betting[2];
+	int _leastbet;
+	SleepyDiscord::Channel _channel;
+	bool _playing;
+	std::string _name;
+	std::string _displayname;
+	std::string _gameID;
+	std::string _messageID;
+
+public:
+	virtual bool Process(SleepyDiscord::Interaction interaction, bool start);
+	bool Clear();
+	bool OnStart(SleepyDiscord::Interaction interaction);
+	bool EndGame(int result, int money);
+	std::string GetName() { return _name; };
+	std::string GetID() { return _gameID; };
+	std::string GameMessage() { return _messageID; };
+	void SetMessage(std::string S) { _messageID = S; }
+	bool IsPlaying() { return _playing; };
+	int GetBetting(int i = -1) { return i==-1?_betting[0]:_betting[i]; };
+	qasino::qambler GetPlayer(int i) { return _player[i]; };
+	bool GetLeastBet() { return _leastbet; };
+	TwoPGame(std::string name, std::string id, int leastbetting = 3) : _name(name), _gameID(id), _leastbet(leastbetting) {
+		Clear();
+	}
+};*/
 
 class DiceBet : public SoloGame {
 	std::string _bet;

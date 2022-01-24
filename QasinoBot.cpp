@@ -1036,7 +1036,6 @@ void QasinoBot::writeStock(qasino::stock S) {
 	ofile << out;
 }
 
-
 Embed QasinoBot::qamblerProfile(qasino::qambler Qb) {
 	Embed E;
 	EmbedField EF;
@@ -1390,8 +1389,7 @@ void QasinoBot::onMessage(SleepyDiscord::Message message) {
 	saveMessage(message);
 	std::vector<std::string> input;
 	input = split(message.content, ' ');
-	if (message.author.ID.string() == Q_ID
-		|| message.author.ID.string() == "273798478755528704") {
+	if (message.author.ID.string() == Q_ID || message.author.ID.string() == "273798478755528704") {
 		if (input.size() != 0) {
 			if (input[0] == "||nick") {
 				std::string nickID = input[1].substr(3, input[1].size() - 4);
