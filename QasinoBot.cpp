@@ -106,7 +106,6 @@ bool SoloGame::OnStart(Interaction interaction) {
 	response.data.content = GetTextA("solo-game-start", _displayname.c_str(), std::to_string(_betting).c_str());
 	response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 	client->createInteractionResponse(interaction, interaction.token, response);
-	_player.ChangeInt(qasino::SYS_GAME_CHIP, -1 * _betting);
 	client->writeQamblerInfo(_player);
 
 	return true;
@@ -126,13 +125,16 @@ bool SoloGame::EndGame(int result, int money) {
 	Total.name = client->GetTextL("solo-game-result-tot");
 	BetMoney.value = std::to_string(_betting);
 	if (result == true) {
-		_player.ChangeInt(qasino::SYS_GAME_CHIP, money);
-		client->writeQamblerInfo(_player);
 		E.description = client->GetTextL("solo-game-result-win", _player.nick.c_str());
 		GetMoney.value = std::to_string(money);
 		Total.value = std::to_string(money - _betting);
+		money -= _betting;
+		_player.ChangeInt(qasino::SYS_GAME_CHIP, money);
+		client->writeQamblerInfo(_player);
 	}
 	else if (result == false) {
+		_player.ChangeInt(qasino::SYS_GAME_CHIP, -1 * _betting);
+		client->writeQamblerInfo(_player);
 		E.description = client->GetTextL("solo-game-result-lose", _player.nick.c_str());
 		GetMoney.value = std::to_string(0);
 		Total.value = std::to_string(0 - _betting);
@@ -390,9 +392,7 @@ bool BlackJack::Process(Interaction interaction, bool start = false) {
 		}
 		else if (SplitID[2] == "doubledown") {
 			if (_player.GetInt(qasino::SYS_GAME_CHIP) >= _betting) {
-				_player.ChangeInt(qasino::SYS_GAME_CHIP, _betting * -1);
 				_betting *= 2;
-				client->writeQamblerInfo(_player);
 				SleepyDiscord::Interaction::Response response;
 				response.type = SleepyDiscord::Interaction::Response::Type::DeferredUpdateMessage;
 				client->createInteractionResponse(interaction, interaction.token, response);
