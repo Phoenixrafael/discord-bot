@@ -1468,14 +1468,27 @@ void QasinoBot::onInteraction(Interaction interaction) {
 	if (interaction.type == Interaction::Type::MessageComponent) {
 		if (SplitID[0] == "solo") {
 			SoloGame* soloGame;
+			bool init = false;
 			for (std::vector<SoloGame*>::iterator it = _sologames.begin(); it != _sologames.end(); it++) {
 				soloGame = *it;
 				if (soloGame->GetID() == SplitID[1]) {
+					init = true;
 					break;
 				}
 			}
-			if (soloGame->GetPlayer().ID == interaction.member.ID.string()) {
-				soloGame->Process(std::move(interaction));
+			if (init) {
+				if (soloGame->GetPlayer().ID == interaction.member.ID.string()) {
+					soloGame->Process(std::move(interaction));
+				}
+			}
+			else {
+				deleteMessage(interaction.channelID, interaction.message);
+				iQB.SetInt(qasino::SYS_IS_PLAYING, 0);
+				writeQamblerInfo(iQB);
+				response.data.content = GetTextA("wrong-interaction");
+				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+				response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
+				createInteractionResponse(interaction, interaction.token, response);
 			}
 		}
 	}
