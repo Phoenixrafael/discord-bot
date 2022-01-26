@@ -576,7 +576,7 @@ bool BlackJack::Process(Interaction interaction, bool start = false) {
 				std::to_string(dealerscore).c_str());
 		}
 	}
-	if (_stand && dealerscore > 21) {
+	if (_stand && (dealerscore > 21 || (dealerscore >= 17 && playerscore > dealerscore))) {
 		Ep.content = GetTextA("blackjack1p-table-playerwin", player.c_str(),
 			dealer.c_str(),
 			std::to_string(playerscore).c_str(),
@@ -594,7 +594,7 @@ bool BlackJack::Process(Interaction interaction, bool start = false) {
 		EndGame(true, _betting*2);
 		return 0;
 	}
-	if (_stand && playerscore <= dealerscore) {
+	if (_stand && (playerscore <= dealerscore && dealerscore >= 17)) {
 		Ep.content = GetTextA("blackjack1p-table-dealerwin", player.c_str(),
 			dealer.c_str(),
 			std::to_string(playerscore).c_str(),
