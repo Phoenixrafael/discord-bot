@@ -1220,6 +1220,15 @@ void QasinoBot::saveMessage(Message message) {
 
 }
 
+void QasinoBot::UpdSt1() {
+	updateStatus(GetTextA("StatusGame1", std::to_string(_sl.size()).c_str()), 0, online);
+	schedule([this]() {this->UpdSt2(); }, 5000);
+}
+void QasinoBot::UpdSt2() {
+	updateStatus(GetTextA("StatusGame2"), 0, doNotDisturb);
+	schedule([this]() {this->UpdSt1(); }, 5000);
+}
+
 void QasinoBot::onReady(Ready readyData) {
 	std::array<AppCommand::Option, 1> option;
 	std::array<AppCommand::Option, 2> option2;

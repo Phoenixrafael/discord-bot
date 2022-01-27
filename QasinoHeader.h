@@ -501,4 +501,6 @@ public:
 	void onMessage(SleepyDiscord::Message message) override;
 	void onInteraction(SleepyDiscord::Interaction interaction) override;
 
+	void UpdSt1();
+	void UpdSt2();
 };
