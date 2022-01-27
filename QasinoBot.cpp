@@ -1391,6 +1391,7 @@ void QasinoBot::onReady(Ready readyData) {
 
 	_globalDeck = qasino::ClassicDeck(true, true);
 
+	UpdSt1();
 	UpdStk();
 }
 
