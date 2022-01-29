@@ -380,6 +380,7 @@ public:
 	virtual bool Process(SleepyDiscord::Interaction interaction, bool start);
 	std::string GetName() { return _name; };
 	std::string GetID() { return _gameID; };
+	std::string GetPlace() { return _channel.ID; };
 	std::string GameMessage() { return _messageID; };
 	void SetMessage(std::string S) { _messageID = S; }
 	bool IsPlaying() { return _playing; };
@@ -459,6 +460,11 @@ public:
 
 };
 
+/*class AnticipationAndConfirmation : public SoloGame {
+	virtual bool Clear();
+	bool Process(SleepyDiscord::Interaction interaction, bool start);
+};
+*/
 class QasinoBot : public SleepyDiscord::DiscordClient {
 public:
 	using SleepyDiscord::DiscordClient::DiscordClient;

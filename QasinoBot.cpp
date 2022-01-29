@@ -1698,6 +1698,24 @@ void QasinoBot::onInteraction(Interaction interaction) {
 		RollDice(interaction.channelID, false, 3, title);
 	}
 	else if (interaction.data.name == "solo-game") {
+		SoloGame* soloGame;
+		std::string S = interaction.channelID;
+		for (std::vector<SoloGame*>::iterator it = _sologames.begin(); it != _sologames.end();) {
+			soloGame = *it;
+			if (soloGame->GetPlace() == S && soloGame->IsPlaying()) {
+				response.data.content = GetTextA("game-channelplaying");
+				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+				response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
+				createInteractionResponse(interaction, interaction.token, response);
+				return;
+			}
+			if (!soloGame->IsPlaying()) {
+				it = _sologames.erase(it);
+			}
+			else {
+				it++;
+			}
+		}
 		std::string gametype = interaction.data.options.at(0).value.GetString();
 		if (gametype == "dice-bet") {
 			DiceBet* dicebet = new DiceBet(interaction.ID);
@@ -1707,7 +1725,6 @@ void QasinoBot::onInteraction(Interaction interaction) {
 			BlackJack* blackjack = new BlackJack(interaction.ID);
 			_sologames.push_back(blackjack);
 		}
-		SoloGame* soloGame;
 		for (std::vector<SoloGame*>::iterator it = _sologames.begin(); it != _sologames.end(); it++) {
 			soloGame = *it;
 			if (soloGame->GetID() == interaction.ID.string()) {
