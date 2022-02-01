@@ -1243,6 +1243,56 @@ void QasinoBot::onReady(Ready readyData) {
 
 	createGlobalAppCommand(QasinoAppID, "help", GetTextA("help"));
 
+	option.at(0).type = AppCommand::Option::Type::STRING;
+	option.at(0).name = "nickname";
+	option.at(0).description = GetTextA("nick-nickname");
+	option.at(0).isRequired = true;
+	createGlobalAppCommand(QasinoAppID, "nick", GetTextA("nick"), option);
+
+	option.at(0).type = AppCommand::Option::Type::STRING;
+	option.at(0).name = "areyousure";
+	option.at(0).description = GetTextA("getAdmin-are-you-sure");
+	option.at(0).isRequired = true;
+
+	choice.value = "Yes";
+	choice.name = GetTextA("getAdmin-yes");
+	option.at(0).choices.push_back(std::move(choice));
+
+	choice.value = "No";
+	choice.name = GetTextL("getAdmin-no");
+	option.at(0).choices.push_back(std::move(choice));
+
+	choice.value = "YeNo";
+	choice.name = GetTextL("getAdmin-yeno");
+	option.at(0).choices.push_back(std::move(choice));
+
+	createGlobalAppCommand(QasinoAppID, "getadmin", GetTextA("getAdmin"), option);
+
+	createGlobalAppCommand(QasinoAppID, "dice", GetTextA("dice"));
+
+	createGlobalAppCommand(QasinoAppID, "uptime", GetTextA("uptime")); */
+
+	option2.at(0).type = AppCommand::Option::Type::STRING;
+	option2.at(0).name = "game";
+	option2.at(0).description = GetTextA("solo-game-game");
+	option2.at(0).isRequired = true;
+
+	choice.value = "dice-bet";
+	choice.name = GetTextL("solo-dice-bet");
+	option2.at(0).choices.push_back(std::move(choice));
+	choice.value = "blackjack";
+	choice.name = GetTextL("solo-blackjack");
+	option2.at(0).choices.push_back(std::move(choice));
+
+	/*---*/
+
+	option2.at(1).type = AppCommand::Option::Type::INTEGER;
+	option2.at(1).name = "betting";
+	option2.at(1).description = GetTextA("solo-game-betting");
+	option2.at(1).isRequired = true;
+
+	/*createGlobalAppCommand(QasinoAppID, "solo-game", GetTextA("solo-game"), option2);
+
 	option3.at(0).type = AppCommand::Option::Type::STRING;
 	option3.at(0).name = "to-do";
 	choice.value = "buy";
@@ -1285,75 +1335,14 @@ void QasinoBot::onReady(Ready readyData) {
 	option3.at(2).isRequired = true;
 	createGlobalAppCommand(QasinoAppID, "stock", GetTextL("stock"), option3);
 
-	option.at(0).type = AppCommand::Option::Type::STRING;
-	option.at(0).name = "nickname";
-	option.at(0).description = GetTextA("nick-nickname");
-	option.at(0).isRequired = true;
-	createGlobalAppCommand(QasinoAppID, "nick", GetTextA("nick"), option);
-
-	option.at(0).type = AppCommand::Option::Type::STRING;
-	option.at(0).name = "areyousure";
-	option.at(0).description = GetTextA("getAdmin-are-you-sure");
-	option.at(0).isRequired = true;
-
-	choice.value = "Yes";
-	choice.name = GetTextA("getAdmin-yes");
-	option.at(0).choices.push_back(std::move(choice));
-
-	choice.value = "No";
-	choice.name = GetTextL("getAdmin-no");
-	option.at(0).choices.push_back(std::move(choice));
-
-	choice.value = "YeNo";
-	choice.name = GetTextL("getAdmin-yeno");
-	option.at(0).choices.push_back(std::move(choice));
-
-	createGlobalAppCommand(QasinoAppID, "getadmin", GetTextA("getAdmin"), option);
-
 	option.at(0).type = AppCommand::Option::Type::INTEGER;
-	option.at(0).name = "money";
-	option.at(0).description = GetTextA("beg-money");
-	option.at(0).isRequired = true;
-	createGlobalAppCommand(QasinoAppID, "beg", GetTextA("beg"), option);
+	option.at(0).name = "count";
+	option.at(0).description = GetTextA("cardpick-count");
+	option.at(0).isRequired = false;
 
-	createGlobalAppCommand(QasinoAppID, "dice", GetTextA("dice"));*/
+	createGlobalAppCommand(QasinoAppID, "cardpick", GetTextA("cardpick"), option);
 
 	option2.at(0).type = AppCommand::Option::Type::STRING;
-	option2.at(0).name = "game";
-	option2.at(0).description = GetTextA("solo-game-game");
-	option2.at(0).isRequired = true;
-
-	choice.value = "dice-bet";
-	choice.name = GetTextL("solo-dice-bet");
-	option2.at(0).choices.push_back(std::move(choice));
-	choice.value = "blackjack";
-	choice.name = GetTextL("solo-blackjack");
-	option2.at(0).choices.push_back(std::move(choice));
-
-	/*---*/
-
-	option2.at(1).type = AppCommand::Option::Type::INTEGER;
-	option2.at(1).name = "betting";
-	option2.at(1).description = GetTextA("solo-game-betting");
-	option2.at(1).isRequired = true;
-
-	//createGlobalAppCommand(QasinoAppID, "solo-game", GetTextA("solo-game"), option2);
-
-	/*option2.at(0).type = AppCommand::Option::Type::USER;
-	option2.at(0).name = "qambler";
-	option2.at(0).description = GetTextA("send-qambler");
-	option2.at(0).isRequired = true;
-	option2.at(0).choices.clear();
-
-	option2.at(1).type = AppCommand::Option::Type::INTEGER;
-	option2.at(1).name == "money";
-	option2.at(1).description = GetTextA("send-money");
-	option2.at(1).isRequired = true;
-	option2.at(1).choices.clear();
-
-	createGlobalAppCommand(QasinoAppID, "send", GetTextA("send"), option2);*/
-
-	/*0option2.at(0).type = AppCommand::Option::Type::STRING;
 	option2.at(0).name = "action";
 	option2.at(0).description = GetTextA("chip-action");
 	option2.at(0).isRequired = true;
@@ -1371,17 +1360,27 @@ void QasinoBot::onReady(Ready readyData) {
 	option2.at(1).description = GetTextA("chip-count");
 	option2.at(1).isRequired = true;
 
-	createGlobalAppCommand(QasinoAppID, "chip", GetTextA("chip"), option2);
-
-
-	createGlobalAppCommand(QasinoAppID, "uptime", GetTextA("uptime")); 
-
 	option.at(0).type = AppCommand::Option::Type::INTEGER;
-	option.at(0).name = "count";
-	option.at(0).description = GetTextA("cardpick-count");
-	option.at(0).isRequired = false;
+	option.at(0).name = "money";
+	option.at(0).description = GetTextA("beg-money");
+	option.at(0).isRequired = true;
+	createGlobalAppCommand(QasinoAppID, "beg", GetTextA("beg"), option);
 
-	createGlobalAppCommand(QasinoAppID, "cardpick", GetTextA("cardpick"), option);*/
+	createGlobalAppCommand(QasinoAppID, "chip", GetTextA("chip"), option2);
+	
+	option2.at(0).type = AppCommand::Option::Type::USER;
+	option2.at(0).name = "qambler";
+	option2.at(0).description = GetTextA("send-qambler");
+	option2.at(0).isRequired = true;
+	option2.at(0).choices.clear();
+
+	option2.at(1).type = AppCommand::Option::Type::INTEGER;
+	option2.at(1).name == "money";
+	option2.at(1).description = GetTextA("send-money");
+	option2.at(1).isRequired = true;
+	option2.at(1).choices.clear();
+
+	createGlobalAppCommand(QasinoAppID, "send", GetTextA("send"), option2);*/
 
 
 	stocks.push_back(qasino::CreateStock("Stock", 100, 20, 1, 3000));
@@ -1660,7 +1659,7 @@ void QasinoBot::onInteraction(Interaction interaction) {
 		Qb.info[qasino::ECO_BEGGAR] = std::to_string(t);
 		Qb.info[qasino::ECO_ISBEGGAR] = "true";
 		writeQamblerInfo(Qb);
-		if (money < 10 || money > 20000) {
+		if (money < 10 || money > 50000) {
 			response.data.content = GetTextA("beg-fail-over", Qb.nick.c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), Qb.nick.c_str(), Qb.nick.c_str());
 			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 			createInteractionResponse(interaction, interaction.token, response);
@@ -1669,7 +1668,7 @@ void QasinoBot::onInteraction(Interaction interaction) {
 		else {
 			std::random_device rd;
 			std::mt19937 gen(rd());
-			std::uniform_int_distribution<int> dis(0, 20000 / money + 3);
+			std::uniform_int_distribution<int> dis(0, 50000 / money + 3);
 			if (dis(rd) <= 3) {
 				response.data.content = GetTextA("beg-fail", Qb.nick.c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), Qb.nick.c_str(), Qb.nick.c_str());
 				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
