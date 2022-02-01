@@ -1653,13 +1653,14 @@ void QasinoBot::onInteraction(Interaction interaction) {
 		}
 	}
 	else if (interaction.data.name == "beg") {
+		const int beglimit = 50000;
 		qasino::qambler Qb = client->readQamblerInfo(interaction.member.ID);
 		int money = interaction.data.options.at(0).value.GetInt();
 		long long t = CurrentTime();
 		Qb.info[qasino::ECO_BEGGAR] = std::to_string(t);
 		Qb.info[qasino::ECO_ISBEGGAR] = "true";
 		writeQamblerInfo(Qb);
-		if (money < 10 || money > 50000) {
+		if (money < 10 || money > beglimit) {
 			response.data.content = GetTextA("beg-fail-over", Qb.nick.c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), Qb.nick.c_str(), Qb.nick.c_str());
 			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 			createInteractionResponse(interaction, interaction.token, response);
@@ -1668,8 +1669,8 @@ void QasinoBot::onInteraction(Interaction interaction) {
 		else {
 			std::random_device rd;
 			std::mt19937 gen(rd());
-			std::uniform_int_distribution<int> dis(0, 50000 / money + 3);
-			if (dis(rd) <= 3) {
+			std::uniform_int_distribution<int> dis(0, beglimit / money + 2);
+			if (dis(rd) <= 2) {
 				response.data.content = GetTextA("beg-fail", Qb.nick.c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), Qb.nick.c_str(), Qb.nick.c_str());
 				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 				createInteractionResponse(interaction, interaction.token, response);
