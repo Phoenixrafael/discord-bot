@@ -760,7 +760,7 @@ bool AnticipationAndConfirmation::Process(Interaction interaction, bool start = 
 				EditMessageParams Ep;
 				Ep.channelID = _channel;
 				Ep.messageID = GameMessage();
-				float d = pow(2, 7 - _turn);
+				float d = pow(2, 6 - _turn);
 				Ep.content = GetTextA("aac-content", std::to_string(_turn + 1).c_str(), std::to_string(d).c_str());
 				Ep.embed = AACEmbed();
 				auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
