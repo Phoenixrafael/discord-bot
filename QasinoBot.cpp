@@ -694,7 +694,7 @@ bool AnticipationAndConfirmation::Process(Interaction interaction, bool start = 
 		}
 		SendMessageParams Sp;
 		Sp.channelID = _channel;
-		float d = pow(1.5, 7 - _turn);
+		float d = pow(1.5, 5 - _turn);
 		Sp.content = GetTextA("aac-content", std::to_string(_turn + 1).c_str(), std::to_string(d).c_str());
 		Sp.embed = AACEmbed();
 		auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
@@ -760,7 +760,7 @@ bool AnticipationAndConfirmation::Process(Interaction interaction, bool start = 
 				EditMessageParams Ep;
 				Ep.channelID = _channel;
 				Ep.messageID = GameMessage();
-				float d = pow(1.5, 6 - _turn);
+				float d = pow(1.5, 5 - _turn);
 				Ep.content = GetTextA("aac-content", std::to_string(_turn + 1).c_str(), std::to_string(d).c_str());
 				Ep.embed = AACEmbed();
 				auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
@@ -773,7 +773,7 @@ bool AnticipationAndConfirmation::Process(Interaction interaction, bool start = 
 				Ep.components.push_back(actionRow);
 				client->editMessage(Ep);
 				if (x == _answer) {
-					EndGame(true, _betting * pow(1.5, 7-_turn));
+					EndGame(true, _betting * pow(1.5, 6-_turn));
 				}
 			}
 		}
