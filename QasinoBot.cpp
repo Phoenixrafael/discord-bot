@@ -694,7 +694,8 @@ bool AnticipationAndConfirmation::Process(Interaction interaction, bool start = 
 		}
 		SendMessageParams Sp;
 		Sp.channelID = _channel;
-		Sp.content = GetTextA("aac-content");
+		float d = pow(2, 7 - _turn);
+		Sp.content = GetTextA("aac-content", std::to_string(_turn + 1).c_str(), std::to_string(d).c_str());
 		Sp.embed = AACEmbed();
 		auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
 		auto button1 = std::make_shared<SleepyDiscord::Button>();
@@ -723,6 +724,10 @@ bool AnticipationAndConfirmation::Process(Interaction interaction, bool start = 
 			}
 			else {
 				std::vector<int> x;
+				bool visit[10];
+				for (int i = 0; i < 10; i++) {
+					visit[i] = false;
+				}
 				for (int i = 0; i < _dif; i++) {
 					x.push_back(S[i] - '0');
 					if (x[i] < 0 || x[i] > 9) {
@@ -733,6 +738,15 @@ bool AnticipationAndConfirmation::Process(Interaction interaction, bool start = 
 						client->createInteractionResponse(interaction, interaction.token, response);
 						return true;
 					}
+					else if (visit[x[i]] == true) {
+						SleepyDiscord::Interaction::Response response;
+						response.data.content = GetTextA("aac-inv");
+						response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+						response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
+						client->createInteractionResponse(interaction, interaction.token, response);
+						return true;
+					}
+					visit[x[i]] = true;
 				}
 				_history.push_back(x);
 
@@ -746,7 +760,8 @@ bool AnticipationAndConfirmation::Process(Interaction interaction, bool start = 
 				EditMessageParams Ep;
 				Ep.channelID = _channel;
 				Ep.messageID = GameMessage();
-				Ep.content = GetTextA("aac-content");
+				float d = pow(2, 7 - _turn);
+				Ep.content = GetTextA("aac-content", std::to_string(_turn + 1).c_str(), std::to_string(d).c_str());
 				Ep.embed = AACEmbed();
 				auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
 				auto button1 = std::make_shared<SleepyDiscord::Button>();
@@ -758,7 +773,7 @@ bool AnticipationAndConfirmation::Process(Interaction interaction, bool start = 
 				Ep.components.push_back(actionRow);
 				client->editMessage(Ep);
 				if (x == _answer) {
-					EndGame(true, _betting * (7/_turn));
+					EndGame(true, _betting * pow(2, 7-_turn));
 				}
 			}
 		}
@@ -1954,6 +1969,7 @@ void QasinoBot::onInteraction(Interaction interaction) {
 	}
 	else if (interaction.data.name == "gc") {
 		SoloGame* soloGame;
+		bool init;
 		for (std::vector<SoloGame*>::iterator it = _sologames.begin(); it != _sologames.end();) {
 			soloGame = *it;
 			if (!soloGame->IsPlaying()) {
@@ -1961,12 +1977,21 @@ void QasinoBot::onInteraction(Interaction interaction) {
 			}
 			else {
 				if (soloGame->GetPlayer().ID == iQB.ID) {
+					init = true;
 					break;
 				}
 				it++;
 			}
 		}
-		soloGame->Process(std::move(interaction));
+		if (init) {
+			soloGame->Process(std::move(interaction));
+		}
+		else {
+			response.data.content = GetTextA("gc-notfound");
+			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+			response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
+			createInteractionResponse(interaction, interaction.token, response);
+		}
 	}
 	else {
 		
