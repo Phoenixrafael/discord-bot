@@ -464,13 +464,17 @@ class AnticipationAndConfirmation : public SoloGame {
 	std::vector<int> _answer;
 	int _turn;
 	int _dif;
+	float _rew;
+	int _nor;
 	std::vector<std::vector<int>> _history;
 	virtual bool Clear();
 	bool Process(SleepyDiscord::Interaction interaction, bool start);
 	SleepyDiscord::Embed AACEmbed();
 	std::string Result(std::vector<int> v);
 public:
-	AnticipationAndConfirmation(std::string id, int dif) : SoloGame("aac", id, 20) {
+	AnticipationAndConfirmation(std::string id, int dif, float rew, int nor) : SoloGame("aac", id, 20) {
+		_rew = rew;
+		_nor = nor;
 		_dif = dif;
 		Clear();
 	}
