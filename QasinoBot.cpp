@@ -663,9 +663,14 @@ Embed AnticipationAndConfirmation::AACEmbed() {
 	}
 	else {
 		for (int i = 0; i < _history.size(); i++) {
-			EF.name = Result(_history[i]);
+			for (int j = 0; j < _dif; j++) {
+				EF.name += std::to_string(_history.at(i).at(j));
+			}
+			EF.value = Result(_history[i]);
+			E.fields.push_back(EF);
 		}
 	}
+	return E;
 }
 
 bool AnticipationAndConfirmation::Process(Interaction interaction, bool start = false) {
