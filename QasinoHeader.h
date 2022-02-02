@@ -460,11 +460,22 @@ public:
 
 };
 
-/*class AnticipationAndConfirmation : public SoloGame {
+class AnticipationAndConfirmation : public SoloGame {
+	std::vector<int> _answer;
+	int _turn;
+	int _dif;
+	std::vector<std::vector<int>> _history;
 	virtual bool Clear();
 	bool Process(SleepyDiscord::Interaction interaction, bool start);
+	SleepyDiscord::Embed AACEmbed();
+	std::string Result(std::vector<int> v);
+public:
+	AnticipationAndConfirmation(std::string id, int dif) : SoloGame("AAC", id, 20) {
+		_dif = dif;
+		Clear();
+	}
 };
-*/
+
 class QasinoBot : public SleepyDiscord::DiscordClient {
 public:
 	using SleepyDiscord::DiscordClient::DiscordClient;

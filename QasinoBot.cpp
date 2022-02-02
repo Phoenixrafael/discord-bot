@@ -617,33 +617,90 @@ bool BlackJack::Process(Interaction interaction, bool start = false) {
 	return true;
 }
 
-/*class MultiGameInterface {
-protected:
-	bool _play; // playing
-	int _betting; //betting money player1, 2
-	std::vector<SleepyDiscord::User> _player;
-	std::vector<std::string> _reactions;
+bool AnticipationAndConfirmation::Clear() {
+	_answer.clear();
+	_turn = 0;
+	_history.clear();
+	return true;
+}
 
-	bool IsPlayer(std::string id);
+std::string AnticipationAndConfirmation::Result(std::vector<int> v) {
+	int str = 0;
+	int bll = 0;
+	int out = 0;
+	bool visit[10];
+	for (int i = 0; i < 10; i++) {
+		visit[i] = false;
+	}
+	for (int i = 0; i < _dif; i++) {
+		visit[_answer[i]] = true;
+	}
+	for (int i = 0; i < _dif; i++) {
+		if (visit[v[i]]) {
+			if (v[i] == _answer[i]) {
+				str++;
+			}
+			else {
+				bll++;
+			}
+		}
+		else {
+			out++;
+		}
+	}
+	return client->GetTextL("aac-embed-content", 
+		std::to_string(str).c_str(),
+		std::to_string(bll).c_str(),
+		std::to_string(out).c_str());
+}
 
-public:
-	virtual void Clear(void);
+Embed AnticipationAndConfirmation::AACEmbed() {
+	Embed E;
+	E.title = client->GetTextL("aac-embed-title");
+	EmbedField EF;
+	if (_history.size() == 0) {
+		E.description = client->GetTextL("aac-embed-none");
+	}
+	else {
+		for (int i = 0; i < _history.size(); i++) {
+			EF.name = Result(_history[i]);
+		}
+	}
+}
 
-	virtual const char* GetGameName(void) = 0;
+bool AnticipationAndConfirmation::Process(Interaction interaction, bool start = false) {
+	if (start) {
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_int_distribution<int> dis(0, 9);
+		int p;
+		int pass;
+		for (int i = 0; i < _dif;) {
+			p = dis(rd);
+			pass = true;
+			for (int j = 0; j < i; j++) {
+				if (p == _answer.at(j)) {
+					pass = false;
+				}
+			}
+			if (pass) {
+				_answer.push_back(p);
+				i++;
+			}
+		}
+		SendMessageParams Sp;
+		Sp.channelID = _channel;
+		Sp.content = GetTextA("aac-content");
+		Sp.embed = AACEmbed();
+		Message M = client->sendMessage(Sp);
+		SetMessage(M.ID);
+	}
+	else {
+		
+	}
+	return true;
+}
 
-	bool CommandStarter(int betting);
-	virtual bool Is(void);
-	virtual bool Permit(SleepyDiscord::Message& message);
-	virtual bool LocalPermit() = 0;
-	virtual bool Process(SleepyDiscord::Message& message);
-	virtual void Set(std::string str, SleepyDiscord::Message message);
-	virtual bool OnJoin(SleepyDiscord::Message& message) = 0;
-};
-
-bool MultiGameInterface::CommandStarter(int betting) {
-
-	_betting = betting;
-}*/
 struct TextManager::bytemask TextManager::_masks[6] = {
 	{ (unsigned char)0x80, (unsigned char)0x00 }, // 1byte
 	{ (unsigned char)0xE0, (unsigned char)0xC0 }, // 2byte
@@ -1283,6 +1340,9 @@ void QasinoBot::onReady(Ready readyData) {
 	choice.value = "blackjack";
 	choice.name = GetTextL("solo-blackjack");
 	option2.at(0).choices.push_back(std::move(choice));
+	choice.value = "aac";
+	choice.name = GetTextL("solo-aac");
+	option2.at(0).choices.push_back(std::move(choice));
 
 	/*---*/
 
@@ -1291,9 +1351,9 @@ void QasinoBot::onReady(Ready readyData) {
 	option2.at(1).description = GetTextA("solo-game-betting");
 	option2.at(1).isRequired = true;
 
-	/*createGlobalAppCommand(QasinoAppID, "solo-game", GetTextA("solo-game"), option2);
+	createGlobalAppCommand(QasinoAppID, "solo-game", GetTextA("solo-game"), option2);
 
-	option3.at(0).type = AppCommand::Option::Type::STRING;
+	/*option3.at(0).type = AppCommand::Option::Type::STRING;
 	option3.at(0).name = "to-do";
 	choice.value = "buy";
 	choice.name = GetTextL("stock-buy");
@@ -1724,6 +1784,10 @@ void QasinoBot::onInteraction(Interaction interaction) {
 		if (gametype == "blackjack") {
 			BlackJack* blackjack = new BlackJack(interaction.ID);
 			_sologames.push_back(blackjack);
+		}
+		if (gametype == "aac") {
+			AnticipationAndConfirmation* aac = new AnticipationAndConfirmation(interaction.ID, 3);
+			_sologames.push_back(aac);
 		}
 		for (std::vector<SoloGame*>::iterator it = _sologames.begin(); it != _sologames.end(); it++) {
 			soloGame = *it;
