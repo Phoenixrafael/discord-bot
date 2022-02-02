@@ -470,7 +470,7 @@ class AnticipationAndConfirmation : public SoloGame {
 	SleepyDiscord::Embed AACEmbed();
 	std::string Result(std::vector<int> v);
 public:
-	AnticipationAndConfirmation(std::string id, int dif) : SoloGame("AAC", id, 20) {
+	AnticipationAndConfirmation(std::string id, int dif) : SoloGame("aac", id, 20) {
 		_dif = dif;
 		Clear();
 	}

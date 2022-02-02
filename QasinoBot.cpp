@@ -648,10 +648,8 @@ std::string AnticipationAndConfirmation::Result(std::vector<int> v) {
 			out++;
 		}
 	}
-	return client->GetTextL("aac-embed-content", 
-		std::to_string(str).c_str(),
-		std::to_string(bll).c_str(),
-		std::to_string(out).c_str());
+	std::string S = GetTextA("aac-embed-content", std::to_string(str).c_str(), std::to_string(bll).c_str(), std::to_string(out).c_str());
+	return S;
 }
 
 Embed AnticipationAndConfirmation::AACEmbed() {
@@ -663,6 +661,7 @@ Embed AnticipationAndConfirmation::AACEmbed() {
 	}
 	else {
 		for (int i = 0; i < _history.size(); i++) {
+			EF.name = "";
 			for (int j = 0; j < _dif; j++) {
 				EF.name += std::to_string(_history.at(i).at(j));
 			}
@@ -697,11 +696,72 @@ bool AnticipationAndConfirmation::Process(Interaction interaction, bool start = 
 		Sp.channelID = _channel;
 		Sp.content = GetTextA("aac-content");
 		Sp.embed = AACEmbed();
+		auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
+		auto button1 = std::make_shared<SleepyDiscord::Button>();
+		button1->style = SleepyDiscord::ButtonStyle::Danger;
+		button1->label = GetTextA("aac-quit");
+		button1->customID = "solo-" + GetID() + "-quit";
+		button1->disabled = false;
+		actionRow->components.push_back(button1);
+		Sp.components.push_back(actionRow);
 		Message M = client->sendMessage(Sp);
 		SetMessage(M.ID);
 	}
 	else {
-		
+		if (interaction.type == Interaction::Type::MessageComponent) {
+			EndGame(0, 0);
+		}
+		else {
+			std::string S = interaction.data.options.at(0).value.GetString();
+			if (S.size() != _dif) {
+				SleepyDiscord::Interaction::Response response;
+				response.data.content = GetTextA("aac-inv");
+				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+				response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
+				client->createInteractionResponse(interaction, interaction.token, response);
+				return true;
+			}
+			else {
+				std::vector<int> x;
+				for (int i = 0; i < _dif; i++) {
+					x.push_back(S[i] - '0');
+					if (x[i] < 0 || x[i] > 9) {
+						SleepyDiscord::Interaction::Response response;
+						response.data.content = GetTextA("aac-inv");
+						response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+						response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
+						client->createInteractionResponse(interaction, interaction.token, response);
+						return true;
+					}
+				}
+				_history.push_back(x);
+
+				SleepyDiscord::Interaction::Response response;
+				response.data.content = GetTextA("aac-acc");
+				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
+				response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
+				client->createInteractionResponse(interaction, interaction.token, response);
+
+				_turn++;
+				EditMessageParams Ep;
+				Ep.channelID = _channel;
+				Ep.messageID = GameMessage();
+				Ep.content = GetTextA("aac-content");
+				Ep.embed = AACEmbed();
+				auto actionRow = std::make_shared<SleepyDiscord::ActionRow>();
+				auto button1 = std::make_shared<SleepyDiscord::Button>();
+				button1->style = SleepyDiscord::ButtonStyle::Danger;
+				button1->label = GetTextA("aac-quit");
+				button1->customID = "solo-" + GetID() + "-quit";
+				button1->disabled = false;
+				actionRow->components.push_back(button1);
+				Ep.components.push_back(actionRow);
+				client->editMessage(Ep);
+				if (x == _answer) {
+					EndGame(true, _betting * (7/_turn));
+				}
+			}
+		}
 	}
 	return true;
 }
@@ -1356,7 +1416,7 @@ void QasinoBot::onReady(Ready readyData) {
 	option2.at(1).description = GetTextA("solo-game-betting");
 	option2.at(1).isRequired = true;
 
-	createGlobalAppCommand(QasinoAppID, "solo-game", GetTextA("solo-game"), option2);
+	//createGlobalAppCommand(QasinoAppID, "solo-game", GetTextA("solo-game"), option2);
 
 	/*option3.at(0).type = AppCommand::Option::Type::STRING;
 	option3.at(0).name = "to-do";
@@ -1445,7 +1505,13 @@ void QasinoBot::onReady(Ready readyData) {
 	option2.at(1).isRequired = true;
 	option2.at(1).choices.clear();
 
-	createGlobalAppCommand(QasinoAppID, "send", GetTextA("send"), option2);*/
+	createGlobalAppCommand(QasinoAppID, "send", GetTextA("send"), option2);
+
+	option.at(0).type = AppCommand::Option::Type::STRING;
+	option.at(0).name = "text";
+	option.at(0).description = GetTextA("gc-text");
+	option.at(0).isRequired = true;
+	createGlobalAppCommand(QasinoAppID, "gc", GetTextA("gc"), option);*/
 
 
 	stocks.push_back(qasino::CreateStock("Stock", 100, 20, 1, 3000));
@@ -1567,7 +1633,7 @@ void QasinoBot::onInteraction(Interaction interaction) {
 		}
 	}
 	else {
-		if (iQB.GetInt(qasino::SYS_IS_PLAYING)) {
+		if (iQB.GetInt(qasino::SYS_IS_PLAYING) && interaction.data.name != "gc") {
 			response.data.content = GetTextA("PL_X");
 			response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 			response.data.flags = InteractionAppCommandCallbackData::Flags::Ephemeral;
@@ -1886,8 +1952,24 @@ void QasinoBot::onInteraction(Interaction interaction) {
 			sendMessage(interaction.channelID, packetemoji);
 		}
 	}
+	else if (interaction.data.name == "gc") {
+		SoloGame* soloGame;
+		for (std::vector<SoloGame*>::iterator it = _sologames.begin(); it != _sologames.end();) {
+			soloGame = *it;
+			if (!soloGame->IsPlaying()) {
+				it = _sologames.erase(it);
+			}
+			else {
+				if (soloGame->GetPlayer().ID == iQB.ID) {
+					break;
+				}
+				it++;
+			}
+		}
+		soloGame->Process(std::move(interaction));
+	}
 	else {
-
+		
 	}
 }
 
