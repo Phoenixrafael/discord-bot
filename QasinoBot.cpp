@@ -1872,7 +1872,7 @@ void QasinoBot::onInteraction(Interaction interaction) {
 			_sologames.push_back(blackjack);
 		}
 		if (gametype == "aac") {
-			AnticipationAndConfirmation* aac = new AnticipationAndConfirmation(interaction.ID, 3, 2, 6);
+			AnticipationAndConfirmation* aac = new AnticipationAndConfirmation(interaction.ID, 3, 3, 6);
 			_sologames.push_back(aac);
 		}
 		for (std::vector<SoloGame*>::iterator it = _sologames.begin(); it != _sologames.end(); it++) {
