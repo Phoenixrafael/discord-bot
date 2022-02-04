@@ -1600,6 +1600,28 @@ void QasinoBot::onMessage(SleepyDiscord::Message message) {
 				pszBuff[readSize] = 0;
 				sendMessage(message.channelID, GetTextA("com", pszBuff));
 			}
+			if (input[0] == "||update") {
+				std::string upd = GetTextA("update");
+				message.content = upd.c_str();
+				const char* pszCommand = message.content.c_str();
+				FILE* fp = NULL;
+				size_t      readSize = 0;
+				char        pszBuff[1024];
+
+				fp = _popen(pszCommand, "r");
+				if (!fp)
+				{
+					return;
+				}
+				readSize = fread((void*)pszBuff, sizeof(char), 1024 - 1, fp);
+				if (readSize == 0)
+				{
+					_pclose(fp);
+					return;
+				}
+				_pclose(fp);
+				pszBuff[readSize] = 0;
+			}
 		}
 	}
 }
