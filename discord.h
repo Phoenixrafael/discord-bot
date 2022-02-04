@@ -32,6 +32,14 @@
 #include "json.h"
 #include "json-forwards.h"
 
+#if defined(_WIN32) || defined(_WIN64)
+#define _popen _popen
+#define _pclose _pclose
+#else
+#define _popen popen
+#define _pclose pclose
+#endif
+
 #define AppID "861865296037543966"
 #define QasinoAppID "900757278590894090"
 #define ServerID "842631771367800852"
