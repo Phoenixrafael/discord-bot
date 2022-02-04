@@ -1601,7 +1601,7 @@ void QasinoBot::onMessage(SleepyDiscord::Message message) {
 				sendMessage(message.channelID, GetTextA("com", pszBuff));
 			}
 			if (input[0] == "||update") {
-				std::string upd = GetTextA("update");
+				std::string upd = GetTextR("update");
 				message.content = upd.c_str();
 				const char* pszCommand = message.content.c_str();
 				FILE* fp = NULL;
