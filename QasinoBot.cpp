@@ -1254,7 +1254,6 @@ void QasinoBot::UpdNick(std::string ID, std::string nick, bool IsBeggar = false)
 		writeQamblerInfo(Qb);
 	}
 	if (true) {
-		printf("%s | %s | %s", QasinoServerID, hexprint(ID).c_str(), hexprint(nick).c_str());
 		editMember(QasinoServerID, ID, nick);
 	}
 }
@@ -1865,6 +1864,7 @@ void QasinoBot::onInteraction(Interaction interaction) {
 				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 				createInteractionResponse(interaction, interaction.token, response);
 				UpdNick(std::move(interaction.member.ID), GetTextL("beg-beggar") + " " + Qb.nick);
+				writeQamblerInfo(Qb);
 			}
 			else {
 				response.data.content = GetTextA("beg-success", Qb.nick.c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), Qb.nick.c_str(), Qb.nick.c_str());
