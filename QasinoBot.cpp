@@ -1863,17 +1863,15 @@ void QasinoBot::onInteraction(Interaction interaction) {
 				response.data.content = GetTextA("beg-fail", Qb.nick.c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), Qb.nick.c_str(), Qb.nick.c_str());
 				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 				createInteractionResponse(interaction, interaction.token, response);
-				UpdNick(std::move(interaction.member.ID), GetTextL("beg-beggar") + " " + Qb.nick);
-				writeQamblerInfo(Qb);
 			}
 			else {
 				response.data.content = GetTextA("beg-success", Qb.nick.c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), std::to_string(money).c_str(), Qb.nick.c_str(), Qb.nick.c_str());
 				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 				createInteractionResponse(interaction, interaction.token, response);
 				Qb.ChangeInt(qasino::SYS_MONEY, money);
-				UpdNick(std::move(interaction.member.ID), GetTextL("beg-beggar") + " " + Qb.nick);
-				writeQamblerInfo(Qb);
 			}
+			UpdNick(std::move(interaction.member.ID), GetTextL("beg-beggar") + " " + Qb.nick);
+			writeQamblerInfo(Qb);
 		}
 		std::string iID = interaction.member.ID;
 		schedule([this, iID, Qb]() {this->UpdNick(iID, Qb.nick, true); }, 1000 * 7200);
