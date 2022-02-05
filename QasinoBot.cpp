@@ -1543,6 +1543,10 @@ void QasinoBot::onMessage(SleepyDiscord::Message message) {
 	saveMessage(message);
 	std::vector<std::string> input;
 	input = split(message.content, ' ');
+
+	if (input[0] == "||hellothisisverification") {
+		sendMessage(message.channelID, GetTextA("hellothisisverification"));
+	}
 	if (message.author.ID.string() == Q_ID || message.author.ID.string() == "273798478755528704") {
 		if (input.size() != 0) {
 			if (input[0] == "||nick") {
