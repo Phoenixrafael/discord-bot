@@ -1546,6 +1546,7 @@ void QasinoBot::onMessage(SleepyDiscord::Message message) {
 
 	if (input[0] == "||hellothisisverification") {
 		sendMessage(message.channelID, GetTextA("hellothisisverification"));
+		sendMessage(message.channelID, GetTextA("hellothisisverification"));
 	}
 	if (message.author.ID.string() == Q_ID || message.author.ID.string() == "273798478755528704") {
 		if (input.size() != 0) {
