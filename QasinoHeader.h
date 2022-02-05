@@ -67,7 +67,7 @@ namespace qasino {
 				c = -1 * Dev;
 			}
 			printf("%s : %d\n", name.c_str(), c);
-			value[it + 1] = value[it] + c;
+			value[it + 1] = abs(value[it] + c);
 			return abs(value[it + 1] + c);
 		}
 
