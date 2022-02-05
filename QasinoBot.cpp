@@ -1869,9 +1869,9 @@ void QasinoBot::onInteraction(Interaction interaction) {
 				response.type = SleepyDiscord::Interaction::Response::Type::ChannelMessageWithSource;
 				createInteractionResponse(interaction, interaction.token, response);
 				Qb.ChangeInt(qasino::SYS_MONEY, money);
+				writeQamblerInfo(Qb);
 			}
 			UpdNick(std::move(interaction.member.ID), GetTextL("beg-beggar") + " " + Qb.nick);
-			writeQamblerInfo(Qb);
 		}
 		std::string iID = interaction.member.ID;
 		schedule([this, iID, Qb]() {this->UpdNick(iID, Qb.nick, true); }, 1000 * 7200);
