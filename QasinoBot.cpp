@@ -1540,7 +1540,9 @@ void QasinoBot::onReady(Ready readyData) {
 }
 
 void QasinoBot::onMessage(SleepyDiscord::Message message) {
-	saveMessage(message);
+	if (message.serverID == 842631771367800852) {
+		saveMessage(message);
+	}
 	std::vector<std::string> input;
 	input = split(message.content, ' ');
 
