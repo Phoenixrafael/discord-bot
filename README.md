@@ -1,1 +1,47 @@
-![](https://github.com/Phoenixrafael/discord-bot/blob/master/banner.png)
+![](https://i.imgur.com/Pinehkj.png)
+# QASINO-BOT
+콰지노 봇은 다양한 게임을 지원하는 C++ 기반의 디스코드 봇입니다. ([공식 서버](https://discord.gg/XkmxgQuuY6), [Github 페이지](https://github.com/Phoenixrafael/discord-bot))
+# 기능
+## 게임 리스트
+### 1인용 게임 리스트
+- 블랙잭
+- 주사위 도박
+- 예상과 확인 (숫자야구)
+
+*추후 더 많은 게임 추가 예정*
+
+### 2인용 게임 리스트
+
+- ~~오름차순 (스트림스)~~ *추가예정*
+- ~~포커 (텍사스 홀덤)~~ *추가예정*
+
+*추후 더 많은 게임 추가 예정*
+
+### 멀티플레이어 게임 리스트
+
+*추가 예정*
+
+## 슬래쉬 명령어
+`/help` : 명령어 설명을 불러옵니다.
+
+`/profile` : 자신의 Qambler 프로필을 불러옵니다.
+
+`/stock` : 주식을 사거나 팔 수 있습니다.
+
+`/chip` : 게임에 사용되는 칩을 교환합니다.
+
+`/dice` : 주사위를 굴립니다.
+
+`/cardpick` : 덱에서 카드를 랜덤하게 뽑습니다.
+
+`/solo-game` : 1인용 도박을 실행합니다.
+
+`/send` : 다른 Qambler에게 큐머니를 송금합니다.
+
+`/uptime` : 봇이 마지막으로 초기화된 시간을 확인합니다.
+
+`/nick` : 100000Q$를 지불해 자신의 닉네임을 바꿉니다.
+
+## *기타 명령어*
+
+`/getadmin` : 이 봇의 관리자 권한을 얻습니다. 봇의 관리자는 큰 책임이 따른다는 것을 명심하세요! 😎

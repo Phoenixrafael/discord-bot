@@ -1656,6 +1656,7 @@ void QasinoBot::onInteraction(Interaction interaction) {
 	}
 	else if (iQB.info[qasino::ECO_ISBEGGAR] == "true") {
 		UpdNick(iQB.ID, iQB.nick.substr(7), true);
+		return;
 	}
 
 	if (CurrentTime() - iQB.GetLLong(qasino::SYS_SPAMTIME) <= 3) {
