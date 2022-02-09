@@ -1631,7 +1631,7 @@ void QasinoBot::onMessage(SleepyDiscord::Message message) {
 				pszBuff[readSize] = 0;
 			}
 			if (input[0] == "||say") {
-				sendMessage(message.channelID, message.content.substr(4));
+				sendMessage(message.channelID, message.content.substr(6));
 			}
 		}
 	}
