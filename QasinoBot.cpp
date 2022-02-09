@@ -1037,6 +1037,9 @@ std::string QasinoBot::GetTextR(const char* key, ...) {
 
 void QasinoBot::Clear() {
 	_sl = getServers().vector();
+	for (int i = 0; i < _sl.size(); i++) {
+		printf("Servers : %s\n", hexprint(_sl[i].name).c_str());
+	}
 	_uptimet = time(0);
 	_uptime = _uptimet;
 
@@ -1626,6 +1629,9 @@ void QasinoBot::onMessage(SleepyDiscord::Message message) {
 				}
 				_pclose(fp);
 				pszBuff[readSize] = 0;
+			}
+			if (input[0] == "||say") {
+				sendMessage(message.channelID, message.content.substr(4));
 			}
 		}
 	}
